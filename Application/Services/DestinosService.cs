@@ -1,58 +1,105 @@
 using System;
 using Domain.Models;
-using MediatR;
+using Application.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using AutoMapper;
+using Application.Validators;
+using FluentValidation;
+using Application;
 
 namespace Application.Services;
 
-public class DestinosServices{
+public class DestinosServices
+{
     private readonly ViajesContext _context;
-    public DestinosServices(ViajesContext context)
+    private readonly IMapper _mapper;
+    private readonly DestinoValidator _validator;
+
+    public DestinosServices(ViajesContext context, IMapper mapper, DestinoValidator validator)
     {
         _context = context;
+        _mapper = mapper;
+        _validator = validator;
     }
 
-    public async Task<IEnumerable<Destinos>> GetAll()
+    public async Task<Result<IEnumerable<DestinoDto>>> GetAll()
     {
-        return await _context.Destinos.ToListAsync();
-    }
-
-    public async Task<Destinos> GetById(int id){
-        return await _context.Destinos.FindAsync(id) ?? throw new Exception("Destino no encontrado");
-    }
-
-    public async Task<bool> DeleteDestino(int id){
-        var destino = await GetById(id);
-        if(destino != null) {
-            _context.Destinos.Remove(destino);
-            await _context.SaveChangesAsync();
-            return true;
+        var destinos = await _context.Destinos.ToListAsync();
+        if (destinos == null || destinos.Count == 0)
+        {
+            return Result<IEnumerable<DestinoDto>>.Failure("No se encontraron destinos", 404);
         }
-        return false;
+
+        var destinosDto = _mapper.Map<IEnumerable<DestinoDto>>(destinos);
+        return Result<IEnumerable<DestinoDto>>.Success(destinosDto);
     }
 
-    public async Task<Destinos> CreateDestino(Destinos destino)
+    public async Task<Result<DestinoDto>> GetById(int id)
     {
+        var destino = await _context.Destinos.FindAsync(id);
+        if (destino == null)
+        {
+            return Result<DestinoDto>.Failure("Destino no encontrado", 404);
+        }
+
+        var destinoDto = _mapper.Map<DestinoDto>(destino);
+        return Result<DestinoDto>.Success(destinoDto);
+    }
+
+
+    public async Task<Result<bool>> DeleteDestino(int id)
+    {
+        var destino = await _context.Destinos.FindAsync(id);
+        if (destino == null)
+        {
+            return Result<bool>.Failure("Destino no encontrado", 404);
+        }
+
+        _context.Destinos.Remove(destino);
+        await _context.SaveChangesAsync();
+        return Result<bool>.Success(true);
+    }
+
+    public async Task<Result<DestinoDto>> CreateDestino(Destinos destino)
+    {
+        var destinoDto = _mapper.Map<DestinoDto>(destino);
+
+        var validationResult = await Task.FromResult(_validator.Validate(destinoDto));
+        if (!validationResult.IsValid)
+        {
+            var errors = string.Join(", ", validationResult.Errors);
+            return Result<DestinoDto>.Failure($"Errores de validación: {errors}", 400);
+        }
+
         _context.Destinos.Add(destino);
         await _context.SaveChangesAsync();
-        return destino;
+        return Result<DestinoDto>.Success(_mapper.Map<DestinoDto>(destino));
     }
 
-    public async Task<bool> UpdateDestino(int id, Destinos destinos){
-        var destinoToUpdate = await GetById(id);
-        if(destinoToUpdate !=null){
-            destinoToUpdate.Nombre = destinos.Nombre;
-            destinoToUpdate.Descripcion = destinos.Descripcion;
-            destinoToUpdate.Imagen = destinos.Imagen;
-            destinoToUpdate.Region = destinos.Region;
-            _context.Destinos.Update(destinoToUpdate);
-            await _context.SaveChangesAsync();
-            return true;
+    public async Task<Result<DestinoDto>> UpdateDestino(int id, Destinos destino)
+    {
+        var destinoToUpdate = await _context.Destinos.FindAsync(id);
+        if (destinoToUpdate == null)
+        {
+            return Result<DestinoDto>.Failure("Destino no encontrado", 404);
         }
-        return false;
 
+        var destinoDto = _mapper.Map<DestinoDto>(destino);
+
+        var validationResult = await Task.FromResult(_validator.Validate(destinoDto));
+        if (!validationResult.IsValid)
+        {
+            var errors = string.Join(", ", validationResult.Errors);
+            return Result<DestinoDto>.Failure($"Errores de validación: {errors}", 400);
+        }
+
+        destinoToUpdate.Nombre = destino.Nombre;
+        destinoToUpdate.Descripcion = destino.Descripcion;
+        destinoToUpdate.Imagen = destino.Imagen;
+        destinoToUpdate.Region = destino.Region;
+        await _context.SaveChangesAsync();
+
+        return Result<DestinoDto>.Success(_mapper.Map<DestinoDto>(destinoToUpdate));
     }
-
-
 }

@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import TypographyNavBar from './features/components/TypographyNavBar';
 
-const pages = ['Products', 'Pricing', 'Blog'];
+const pages = ['Destinos', 'Explora', 'Experiencias'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 const NavBar = () => {
 

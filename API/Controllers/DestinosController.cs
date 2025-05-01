@@ -1,5 +1,6 @@
 using Application.Services;
 using Domain.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -7,6 +8,7 @@ namespace API.Controllers;
 public class DestinosController : BaseApiController
 {
     private readonly DestinosServices _destinosServices;
+
     public DestinosController(DestinosServices destinosServices)
     {
         _destinosServices = destinosServices;
@@ -15,41 +17,49 @@ public class DestinosController : BaseApiController
     [HttpGet]
     public async Task<ActionResult<List<Destinos>>> GetDestinos()
     {
-        var destinos = await _destinosServices.GetAll();
-        return Ok(destinos);
+        var result = await _destinosServices.GetAll();
+        return HandleResult(result);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Destinos>> GetDestino(int id)
     {
-        var destino = await _destinosServices.GetById(id);
-        return Ok(destino);
+        var result = await _destinosServices.GetById(id);
+        return HandleResult(result); 
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> EditDestino(int id,Destinos destino)
+    public async Task<ActionResult> EditDestino(int id, Destinos destino)
     {
-        var destinoToUpdate = await _destinosServices.UpdateDestino(id,destino);
-        return Ok(destinoToUpdate);
+        try
+        {
+            var result = await _destinosServices.UpdateDestino(id, destino);
+            return HandleResult(result);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Errors); 
+        }
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateDestino(Destinos destino)
+    public async Task<ActionResult> CreateDestino([FromBody] Destinos destino)
     {
-        var destinoToCreate = await _destinosServices.CreateDestino(destino);
-        return Ok(destinoToCreate);
+        try
+        {
+            var result = await _destinosServices.CreateDestino(destino);
+            return HandleResult(result);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Errors); 
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteDestino(int id)
     {
-        var destinoToDelete = await _destinosServices.DeleteDestino(id);
-        if(destinoToDelete == true){
-            return Ok(new {message = "Destino eliminado correctamente"});
-        }else{
-            return NotFound(new {message = "Destino no encontrado"});
-        }
+        var result = await _destinosServices.DeleteDestino(id);
+        return HandleNoContent(result);
     }
-
-
 }

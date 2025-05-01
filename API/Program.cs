@@ -1,8 +1,11 @@
 using Application.Services;
-using Domain.Models;
-using MediatR;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Application.Mappings;
 using Persistence;
+using FluentValidation;
+using Application.Validators;
+using API.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,6 +18,12 @@ builder.Services.AddCors();
 builder.Services.AddDbContext<ViajesContext>(options =>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<DestinosServices>();
 builder.Services.AddScoped<CategoriasServices>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddValidatorsFromAssemblyContaining<CategoriaValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<DestinoValidator>();
+builder.Services.AddTransient<ExceptionMiddleware>();
+
 
 var app = builder.Build();
 
@@ -24,8 +33,10 @@ var services = scope.ServiceProvider;
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 

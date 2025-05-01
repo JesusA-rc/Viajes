@@ -8,7 +8,7 @@ const images = [
     url: 'https://th.bing.com/th/id/OIP.O20223hRm6fF1STQ46mVFQHaE8?rs=1&pid=ImgDetMain',
     title: 'Cliente',
     width: '40%',
-    path: '/destinos'
+    path: '/clientes'
   },
   {
     id: 2,
