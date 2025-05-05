@@ -44,26 +44,40 @@ public class UsuariosServices
         return Result<UsuarioDto>.Success(usuarioDto);
     }
 
-    public async Task<Result<UsuarioDto>> CreateUsuario(Usuario usuario)
+    public async Task<Result<UsuarioDto>> CreateUsuario(UsuarioDto usuarioDto)
     {
-        var usuarioDto = _mapper.Map<UsuarioDto>(usuario);
-        var validationResult = await Task.FromResult(_validator.Validate(usuarioDto));
-        if (!validationResult.IsValid)
+        try
         {
-            var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
-            return Result<UsuarioDto>.Failure($"Errores de validación: {errors}", 400);
+
+            var validationResult = await Task.FromResult(_validator.Validate(usuarioDto));
+            if (!validationResult.IsValid)
+            {
+                var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+                return Result<UsuarioDto>.Failure($"Errores de validación: {errors}", 400);
+            }
+
+            var usuario = _mapper.Map<Usuario>(usuarioDto);
+
+            var salt = GenerateSalt();
+            usuario.ContrasenaHash = HashPassword(usuarioDto.Contraseña, salt);
+            usuario.ContrasenaSalt = salt;
+            usuario.FechaCreacion = DateTime.Now;
+            usuario.Estado = true;
+
+
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
+
+            return Result<UsuarioDto>.Success(_mapper.Map<UsuarioDto>(usuario));
         }
+        catch (Exception ex)
+        {
 
-        var salt = GenerateSalt();
-        usuario.ContrasenaHash = HashPassword(usuario.ContrasenaSalt.ToString(), salt);
-        usuario.ContrasenaSalt = salt;
-        usuario.FechaCreacion = DateTime.Now;
-        usuario.Estado = true;
+            Console.WriteLine($"Error al crear el usuario: {ex.Message}");
+            Console.WriteLine($"Stack Trace: {ex.StackTrace}");
 
-        _context.Usuarios.Add(usuario);
-        await _context.SaveChangesAsync();
-
-        return Result<UsuarioDto>.Success(_mapper.Map<UsuarioDto>(usuario));
+            return Result<UsuarioDto>.Failure("Error interno del servidor: " + ex.Message, 500);
+        }
     }
 
     public async Task<Result<UsuarioDto>> UpdateUsuario(int id, Usuario usuario)
@@ -105,6 +119,45 @@ public class UsuariosServices
         return Result<bool>.Success(true);
     }
 
+    public async Task<Result<UsuarioDto>> Login(string email, string password)
+    {
+        try
+        {
+            Console.WriteLine($"Intento de inicio de sesión con correo: {email}");
+
+            // Buscar al usuario por correo electrónico
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+            if (usuario == null)
+            {
+                Console.WriteLine("Usuario no encontrado.");
+                return Result<UsuarioDto>.Failure("Correo electrónico o contraseña incorrectos", 401);
+            }
+
+            Console.WriteLine($"Contraseña proporcionada: {password}");
+            Console.WriteLine($"Salt almacenado: {Convert.ToBase64String(usuario.ContrasenaSalt)}");
+            Console.WriteLine($"Hash almacenado: {Convert.ToBase64String(usuario.ContrasenaHash)}");
+
+            // Verificar la contraseña
+            var hashedPassword = HashPassword(password, usuario.ContrasenaSalt);
+            Console.WriteLine($"Hash generado: {Convert.ToBase64String(hashedPassword)}");
+
+            if (!hashedPassword.SequenceEqual(usuario.ContrasenaHash))
+            {
+                Console.WriteLine("La contraseña no coincide con el hash almacenado.");
+                return Result<UsuarioDto>.Failure("Correo electrónico o contraseña incorrectos", 401);
+            }
+
+            Console.WriteLine("Contraseña válida.");
+            var usuarioDto = _mapper.Map<UsuarioDto>(usuario);
+            return Result<UsuarioDto>.Success(usuarioDto);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al iniciar sesión: {ex.Message}");
+            return Result<UsuarioDto>.Failure("Error interno del servidor", 500);
+        }
+    }
+
     private static byte[] GenerateSalt()
     {
         var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
@@ -120,4 +173,5 @@ public class UsuariosServices
             return hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
     }
+
 }

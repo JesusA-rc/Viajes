@@ -9,6 +9,8 @@ import AdminAgregarCategoria from '../features/pages/Admin/Categorias/AdminAgreg
 import AdminAgregarDestinos from '../features/pages/Admin/Destinos/AdminAgregarDestinos.jsx'
 import AdminEditarDestinos from '../features/pages/Admin/Destinos/AdminEditarDestinos.jsx'
 import ClienteLanding from '../features/pages/customer/ClienteLanding.jsx'
+import ClienteRegister from '../features/pages/customer/ClienteRegister.jsx'
+import ClienteLogin from '../features/pages/customer/ClienteLogin.jsx'
 
 export const router = createBrowserRouter([
     {
@@ -23,7 +25,9 @@ export const router = createBrowserRouter([
             {path: 'adminEditarCategoria', element: <AdminEditarCategoria/>},
             {path: 'adminAgregarDestinos', element: <AdminAgregarDestinos/>},
             {path: 'admindEditarDestino', element:  <AdminEditarDestinos/>},
-            {path: 'clientes', element: <ClienteLanding/>}
+            {path: 'clientes', element: <ClienteLanding/>},
+            {path: 'clientes/register', element: <ClienteRegister/>},
+            {path: 'clientes/login', element: <ClienteLogin/>},
         ]
     }
 ])

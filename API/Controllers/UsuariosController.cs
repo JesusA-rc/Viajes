@@ -3,6 +3,7 @@ using Application.DTOs;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace API.Controllers;
 
@@ -30,16 +31,21 @@ public class UsuariosController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateUsuario([FromBody] Usuario usuario)
+    public async Task<ActionResult> CreateUsuario([FromBody] UsuarioDto usuarioDto)
     {
         try
         {
-            var result = await _usuariosServices.CreateUsuario(usuario);
+            var result = await _usuariosServices.CreateUsuario(usuarioDto);
             return HandleResult(result);
         }
         catch (ValidationException ex)
         {
             return BadRequest(ex.Errors);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error inesperado: {ex.Message}");
+            return StatusCode(500, "Error interno del servidor");
         }
     }
 
@@ -63,4 +69,23 @@ public class UsuariosController : BaseApiController
         var result = await _usuariosServices.DeleteUsuario(id);
         return HandleNoContent(result);
     }
+
+    [HttpPost("login")]
+    public async Task<ActionResult> Login([FromBody] LoginRequest request)
+    {
+        try
+        {
+            Console.WriteLine($"Correo electrónico recibido: {request.Email}");
+            Console.WriteLine($"Contraseña recibida: {request.Password}");
+
+            var result = await _usuariosServices.Login(request.Email, request.Password);
+            return HandleResult(result);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error inesperado: {ex.Message}");
+            return StatusCode(500, "Error interno del servidor");
+        }
+    }
+
 }

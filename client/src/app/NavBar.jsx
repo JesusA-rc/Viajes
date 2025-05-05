@@ -13,13 +13,15 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import TypographyNavBar from './features/components/TypographyNavBar';
+import { useNavigate } from 'react-router-dom'; 
 
 const pages = ['Destinos', 'Explora', 'Experiencias'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile', 'login' ,'Account', 'Dashboard', 'register' ,'Logout'];
 const NavBar = () => {
 
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const navigate = useNavigate();
   
     const handleOpenNavMenu = (event) => {
       setAnchorElNav(event.currentTarget);
@@ -32,8 +34,16 @@ const NavBar = () => {
       setAnchorElNav(null);
     };
   
-    const handleCloseUserMenu = () => {
+    const handleCloseUserMenu = (setting) => {
       setAnchorElUser(null);
+  
+      if (setting === 'register') {
+        navigate('/clientes/register'); 
+      }
+
+      if (setting === 'login') {
+        navigate('/clientes/login'); 
+      }
     };
 
   return (
@@ -110,10 +120,10 @@ const NavBar = () => {
                 horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={()=>handleCloseUserMenu(null)}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={()=>handleCloseUserMenu(setting)}>
                   <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                 </MenuItem>
               ))}

@@ -30,7 +30,7 @@ export const useDestinos = () => {
         onSuccess: async () =>{
             await queryClient.invalidateQueries({ queryKey: ['destinos'] });
         },
-    })
+    });
 
     const deleteDestino = useMutation({
         mutationFn: async (idDestino) => {

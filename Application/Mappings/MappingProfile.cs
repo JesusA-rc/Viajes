@@ -10,6 +10,12 @@ public class MappingProfile : Profile
     {
         CreateMap<Categorias, CategoriaDto>();
         CreateMap<Destinos, DestinoDto>();
+    
+
+        CreateMap<UsuarioDto, Usuario>()
+            .ForMember(dest => dest.ContrasenaHash, opt => opt.Ignore())
+            .ForMember(dest => dest.ContrasenaSalt, opt => opt.Ignore()); 
+
         CreateMap<Usuario, UsuarioDto>();
     }
 }
