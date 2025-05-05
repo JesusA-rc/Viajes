@@ -18,10 +18,12 @@ builder.Services.AddCors();
 builder.Services.AddDbContext<ViajesContext>(options =>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<DestinosServices>();
 builder.Services.AddScoped<CategoriasServices>();
+builder.Services.AddScoped<UsuariosServices>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddValidatorsFromAssemblyContaining<CategoriaValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<DestinoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
 
 

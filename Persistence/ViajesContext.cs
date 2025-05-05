@@ -19,6 +19,7 @@ public partial class ViajesContext : DbContext
 
     public virtual DbSet<Destinos> Destinos { get; set; }
 
+    public virtual DbSet<Usuario> Usuarios { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -57,6 +58,19 @@ public partial class ViajesContext : DbContext
                         j.IndexerProperty<int>("IdDestino").HasColumnName("ID_Destino");
                         j.IndexerProperty<int>("IdCategoria").HasColumnName("ID_Categoria");
                     });
+        });
+
+
+        modelBuilder.Entity<Usuario>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Usuarios");
+
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(255).IsUnicode(false);
+            entity.Property(e => e.ContrasenaHash).IsRequired();
+            entity.Property(e => e.ContrasenaSalt).IsRequired();
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.Estado).HasDefaultValue(true);
         });
 
         OnModelCreatingPartial(modelBuilder);

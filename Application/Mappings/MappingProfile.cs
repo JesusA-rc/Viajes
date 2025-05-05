@@ -10,5 +10,6 @@ public class MappingProfile : Profile
     {
         CreateMap<Categorias, CategoriaDto>();
         CreateMap<Destinos, DestinoDto>();
+        CreateMap<Usuario, UsuarioDto>();
     }
 }
