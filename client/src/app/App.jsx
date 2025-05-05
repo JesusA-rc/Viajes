@@ -5,6 +5,9 @@ import NavBar from "./NavBar";
 import AdminNavBar from "./features/pages/Admin/AdminNavBar";
 import SidebarDrawer from "./features/components/SidebarDrawer";
 
+
+
+
 function App() {
   const location = useLocation();
   const menuItems = [
@@ -28,20 +31,20 @@ function App() {
 
   return (
     <React.Fragment>
-      <Box sx={{ backgroundColor: '#eeeeee', minHeight: '100vh' }}>
+      <Box sx={{ backgroundColor: '#eeeeee', minHeight: '100vh'}}>
         <CssBaseline />
         {!(location.pathname === '/' || /^\/admin/.test(location.pathname)) && <NavBar />}
         {(/^\/admin/.test(location.pathname)) && 
         <Box>
             <AdminNavBar/>
-            <Box sx={{p:2}}>
+            <Box>
               <SidebarDrawer menuItems={menuItems}/>
             </Box>
         </Box>
         }
-        <Container maxWidth='xl'>
-          <Outlet />
-        </Container>
+        <Box>
+          <Outlet/>
+        </Box>
       </Box>
     </React.Fragment>
   )

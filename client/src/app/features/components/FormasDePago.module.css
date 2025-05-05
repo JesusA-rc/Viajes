@@ -1,0 +1,27 @@
+
+.parent {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+  height: 100%;
+  overflow: hidden;
+}
+  
+.div1 {
+  grid-row: span 2 / span 2;
+}
+
+
+.div4 {
+  grid-column-start: 2;
+}
+      
+  
+.parent img {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: stretch;
+}
+  
