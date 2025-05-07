@@ -21,6 +21,8 @@ public partial class ViajesContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
+    public virtual DbSet<Favoritos> Favoritos { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Categorias>(entity =>
@@ -71,6 +73,23 @@ public partial class ViajesContext : DbContext
             entity.Property(e => e.ContrasenaSalt).IsRequired();
             entity.Property(e => e.FechaCreacion).HasDefaultValueSql("GETDATE()");
             entity.Property(e => e.Estado).HasDefaultValue(true);
+        });
+
+        modelBuilder.Entity<Favoritos>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Favoritos");
+
+            entity.HasOne(f => f.Usuario)
+                .WithMany(u => u.Favoritos)
+                .HasForeignKey(f => f.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Favoritos_Usuarios");
+
+            entity.HasOne(f => f.Destino)
+                .WithMany(d => d.Favoritos)
+                .HasForeignKey(f => f.DestinoId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Favoritos_Destinos");
         });
 
         OnModelCreatingPartial(modelBuilder);

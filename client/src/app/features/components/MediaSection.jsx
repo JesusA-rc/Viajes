@@ -12,7 +12,7 @@ const MediaSection = ({ title, items }) => {
                 <Box display="flex" flexWrap="wrap" gap={2} >
                     {items.map((item, index) => (
                         <Box key={index} sx={{width:'140px', height: '150px'}}> 
-                            <img  src={item.imagen} alt={item.title} />
+                            <img  src={item.imagen} alt={item.nombre} />
                         </Box>
                     ))}
                 </Box>

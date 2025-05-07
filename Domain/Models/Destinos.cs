@@ -19,4 +19,6 @@ public partial class Destinos
     public string? Region { get; set; }
     [JsonIgnore]
     public virtual ICollection<Categorias> IdCategoria { get; set; } = new List<Categorias>();
+
+    public virtual ICollection<Favoritos> Favoritos { get; set; } = new List<Favoritos>();
 }

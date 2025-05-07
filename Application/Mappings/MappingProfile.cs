@@ -17,5 +17,6 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ContrasenaSalt, opt => opt.Ignore()); 
 
         CreateMap<Usuario, UsuarioDto>();
+        CreateMap<Favoritos, FavoritosDto>().ReverseMap();
     }
 }

@@ -24,5 +24,7 @@ namespace Domain.Models
         public DateTime FechaCreacion { get; set; }
 
         public bool Estado { get; set; }
+
+        public virtual ICollection<Favoritos> Favoritos { get; set; } = new List<Favoritos>();
     }
 }
