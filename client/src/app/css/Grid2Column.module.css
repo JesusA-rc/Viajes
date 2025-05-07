@@ -10,17 +10,23 @@
     grid-column: 1;
     grid-row: 1;
     width: 100%;
+    max-width: 100%;
 }
 
 .gridRight{
     grid-column: 2;
     grid-row: 1;
     width: 100%;
-
+    height: 100%;
 }
 
 .gridRight img{
     width: 100%;
     height: 100%;
 
+}
+
+.gridLeft img {
+    width: 100%;
+    height: 100%;
 }

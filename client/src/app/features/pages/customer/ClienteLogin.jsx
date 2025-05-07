@@ -2,22 +2,34 @@ import React from 'react';
 import { Box, Typography, TextField, Button, Grid, Paper } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
+import { useNavigate } from 'react-router-dom';
 
 const ClienteLogin = () => {
+    const navigate = useNavigate();
     const backgroundImage = 'https://img.pikbest.com/backgrounds/20190423/painted-travel-background-for-travel-agency_1808534.jpg!bw700';
   
     const { loginUsuario } = useUsuarios();
 
     const OnSubmit = async (data) => {
-        try {
-            await loginUsuario.mutateAsync(data);
-            alert('Inicio de sesión exitoso');
-            reset();
-        } catch (error) {
-            alert(`Credenciales incorrectas ${data.email} PASS ${data.password}`);
-            console.error('Error al iniciar sesión:', error);
-        }
-    };
+      try {
+          const response = await loginUsuario.mutateAsync(data); 
+          console.log('Respuesta del backend:', response); 
+  
+          const isAuthenticated = response?.isAuthenticated;
+  
+          if (isAuthenticated) {
+              localStorage.setItem('isAuthenticated', 'true'); 
+              alert('Inicio de sesión exitoso');
+              navigate('/clientes/profile'); 
+              reset();
+          } else {
+              alert('Credenciales incorrectas');
+          }
+      } catch (error) {
+          alert(`Credenciales incorrectas ${data.email} PASS ${data.password}`);
+          console.error('Error al iniciar sesión:', error);
+      }
+  };
 
     const {
       register,

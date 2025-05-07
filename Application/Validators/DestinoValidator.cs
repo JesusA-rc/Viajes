@@ -16,10 +16,12 @@ public class DestinoValidator : AbstractValidator<DestinoDto>
             .NotEmpty().WithMessage("La descripcion es obligatoria.")
             .MaximumLength(100).WithMessage("La descripción no puede tener más de 100 caracteres.");
 
+        /*
         RuleFor(d => d.Imagen)
             .Matches(@"^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$")
             .WithMessage("La URL de la imagen no es válida.")
             .When(d => !string.IsNullOrEmpty(d.Imagen)); 
+        */
 
         RuleFor(d => d.Pais)
             .NotEmpty().WithMessage("El país es obligatorio.")

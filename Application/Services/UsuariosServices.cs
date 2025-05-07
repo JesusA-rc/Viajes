@@ -119,42 +119,28 @@ public class UsuariosServices
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<UsuarioDto>> Login(string email, string password)
+public async Task<Result<bool>> Login(string email, string password)
     {
         try
         {
-            Console.WriteLine($"Intento de inicio de sesión con correo: {email}");
-
-            // Buscar al usuario por correo electrónico
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+
             if (usuario == null)
             {
-                Console.WriteLine("Usuario no encontrado.");
-                return Result<UsuarioDto>.Failure("Correo electrónico o contraseña incorrectos", 401);
+                return Result<bool>.Failure("Correo electrónico o contraseña incorrectos", 401);
             }
 
-            Console.WriteLine($"Contraseña proporcionada: {password}");
-            Console.WriteLine($"Salt almacenado: {Convert.ToBase64String(usuario.ContrasenaSalt)}");
-            Console.WriteLine($"Hash almacenado: {Convert.ToBase64String(usuario.ContrasenaHash)}");
-
-            // Verificar la contraseña
             var hashedPassword = HashPassword(password, usuario.ContrasenaSalt);
-            Console.WriteLine($"Hash generado: {Convert.ToBase64String(hashedPassword)}");
-
             if (!hashedPassword.SequenceEqual(usuario.ContrasenaHash))
             {
-                Console.WriteLine("La contraseña no coincide con el hash almacenado.");
-                return Result<UsuarioDto>.Failure("Correo electrónico o contraseña incorrectos", 401);
+                return Result<bool>.Failure("Correo electrónico o contraseña incorrectos", 401);
             }
 
-            Console.WriteLine("Contraseña válida.");
-            var usuarioDto = _mapper.Map<UsuarioDto>(usuario);
-            return Result<UsuarioDto>.Success(usuarioDto);
+            return Result<bool>.Success(true);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al iniciar sesión: {ex.Message}");
-            return Result<UsuarioDto>.Failure("Error interno del servidor", 500);
+            return Result<bool>.Failure($"Error inesperado: {ex.Message}", 500);
         }
     }
 

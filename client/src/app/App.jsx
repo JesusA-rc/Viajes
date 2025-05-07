@@ -33,8 +33,7 @@ function App() {
     <React.Fragment>
       <Box sx={{ backgroundColor: '#eeeeee', minHeight: '100vh'}}>
         <CssBaseline />
-        {!(location.pathname === '/' || /^\/admin/.test(location.pathname) || location.pathname === '/clientes/register'
-          || location.pathname === '/clientes/login') && <NavBar />}
+        {!(location.pathname === '/' || /^\/admin/.test(location.pathname) || location.pathname.startsWith("/clientes")) && <NavBar />}
         {(/^\/admin/.test(location.pathname)) && 
         <Box>
             <AdminNavBar/>

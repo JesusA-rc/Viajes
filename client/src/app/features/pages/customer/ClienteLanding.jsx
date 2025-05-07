@@ -4,6 +4,7 @@ import { Grid, Box, Typography, Button } from '@mui/material';
 import PopularCategorias from '../../components/PopularCategorias';
 import FormasDePago from '../../components/FormasDePago';
 import Nosotros from '../../components/Nosotros';
+import Footer from '../../components/Footer';
 
 const ClienteLanding = () => {
   const paddinggContent = 5;
@@ -77,6 +78,7 @@ const ClienteLanding = () => {
 
       <Box sx={{display:'flex', flexDirection:'column'}}>
         <Nosotros/>
+        <Footer/>
       </Box>
 
 

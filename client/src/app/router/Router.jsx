@@ -11,6 +11,9 @@ import AdminEditarDestinos from '../features/pages/Admin/Destinos/AdminEditarDes
 import ClienteLanding from '../features/pages/customer/ClienteLanding.jsx'
 import ClienteRegister from '../features/pages/customer/ClienteRegister.jsx'
 import ClienteLogin from '../features/pages/customer/ClienteLogin.jsx'
+import Profile from '../features/pages/customer/Profile.jsx'
+import ProtectedRoute from '../features/pages/customer/ProtectedRoute.jsx'
+import DestinosList from '../features/pages/customer/DestinosList.jsx'
 
 export const router = createBrowserRouter([
     {
@@ -25,9 +28,18 @@ export const router = createBrowserRouter([
             {path: 'adminEditarCategoria', element: <AdminEditarCategoria/>},
             {path: 'adminAgregarDestinos', element: <AdminAgregarDestinos/>},
             {path: 'admindEditarDestino', element:  <AdminEditarDestinos/>},
-            {path: 'clientes', element: <ClienteLanding/>},
+            {path: 'company', element: <ClienteLanding/>},
             {path: 'clientes/register', element: <ClienteRegister/>},
             {path: 'clientes/login', element: <ClienteLogin/>},
+            {
+                path: 'clientes/profile',
+                element: (
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                ),
+            },
+            {path: '/clientes/destinos-list', element: <DestinosList/>}
         ]
     }
 ])

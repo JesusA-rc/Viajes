@@ -79,7 +79,13 @@ public class UsuariosController : BaseApiController
             Console.WriteLine($"Contraseña recibida: {request.Password}");
 
             var result = await _usuariosServices.Login(request.Email, request.Password);
-            return HandleResult(result);
+
+            if (result.IsSuccess)
+            {
+                return Ok(new { isAuthenticated = true }); 
+            }
+
+            return Unauthorized(new { isAuthenticated = false });
         }
         catch (Exception ex)
         {
