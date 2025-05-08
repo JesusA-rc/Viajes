@@ -23,6 +23,8 @@ public partial class ViajesContext : DbContext
 
     public virtual DbSet<Favoritos> Favoritos { get; set; }
 
+    public DbSet<EstadoDestino> EstadoDestino { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Categorias>(entity =>
@@ -91,6 +93,18 @@ public partial class ViajesContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Favoritos_Destinos");
         });
+
+        modelBuilder.Entity<EstadoDestino>()
+            .HasOne(ed => ed.Usuario)
+            .WithMany()
+            .HasForeignKey(ed => ed.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict); 
+
+        modelBuilder.Entity<EstadoDestino>()
+            .HasOne(ed => ed.Destino)
+            .WithMany()
+            .HasForeignKey(ed => ed.DestinoId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         OnModelCreatingPartial(modelBuilder);
     }

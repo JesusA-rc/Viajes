@@ -18,5 +18,6 @@ public class MappingProfile : Profile
 
         CreateMap<Usuario, UsuarioDto>();
         CreateMap<Favoritos, FavoritosDto>().ReverseMap();
+        CreateMap<EstadoDestino, EstadosDestinoDTO>().ReverseMap();
     }
 }
