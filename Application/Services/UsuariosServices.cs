@@ -119,7 +119,7 @@ public class UsuariosServices
         return Result<bool>.Success(true);
     }
 
-public async Task<Result<bool>> Login(string email, string password)
+    public async Task<Result<AuthResponseDto>> Login(string email, string password)
     {
         try
         {
@@ -127,20 +127,27 @@ public async Task<Result<bool>> Login(string email, string password)
 
             if (usuario == null)
             {
-                return Result<bool>.Failure("Correo electrónico o contraseña incorrectos", 401);
+                return Result<AuthResponseDto>.Failure("Correo electrónico o contraseña incorrectos", 401);
             }
 
             var hashedPassword = HashPassword(password, usuario.ContrasenaSalt);
             if (!hashedPassword.SequenceEqual(usuario.ContrasenaHash))
             {
-                return Result<bool>.Failure("Correo electrónico o contraseña incorrectos", 401);
+                return Result<AuthResponseDto>.Failure("Correo electrónico o contraseña incorrectos", 401);
             }
 
-            return Result<bool>.Success(true);
+            var authResponse = new AuthResponseDto
+            {
+                IsAuthenticated = true,
+                UserId = usuario.Id, 
+                Email = usuario.Email 
+            };
+
+            return Result<AuthResponseDto>.Success(authResponse);
         }
         catch (Exception ex)
         {
-            return Result<bool>.Failure($"Error inesperado: {ex.Message}", 500);
+            return Result<AuthResponseDto>.Failure($"Error inesperado: {ex.Message}", 500);
         }
     }
 
@@ -157,6 +164,37 @@ public async Task<Result<bool>> Login(string email, string password)
         using (var hmac = new System.Security.Cryptography.HMACSHA512(salt))
         {
             return hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        }
+    }
+
+    public async Task<Result<IEnumerable<DestinoDto>>> GetFavoritosByUsuarioId(int usuarioId)
+    {
+        try
+        {
+
+            var usuario = await _context.Usuarios.FindAsync(usuarioId);
+            if (usuario == null)
+            {
+                return Result<IEnumerable<DestinoDto>>.Failure("Usuario no encontrado", 404);
+            }
+
+            var favoritos = await _context.Favoritos
+                .Where(f => f.UsuarioId == usuarioId)
+                .Select(f => f.Destino) 
+                .ToListAsync();
+
+            if (favoritos == null || favoritos.Count == 0)
+            {
+                return Result<IEnumerable<DestinoDto>>.Failure("El usuario no tiene destinos favoritos", 404);
+            }
+
+            var destinosDto = _mapper.Map<IEnumerable<DestinoDto>>(favoritos);
+
+            return Result<IEnumerable<DestinoDto>>.Success(destinosDto);
+        }
+        catch (Exception ex)
+        {
+            return Result<IEnumerable<DestinoDto>>.Failure($"Error inesperado: {ex.Message}", 500);
         }
     }
 

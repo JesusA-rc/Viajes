@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
 import agent from '../api/agent'
-
+import { useCallback } from 'react';
 
 export const useUsuarios = () => {
 
@@ -13,6 +13,18 @@ export const useUsuarios = () => {
             return response.data;
         }
     });
+
+    const getFavoritos = useCallback(async (usuarioId) => {
+        try {
+        const response = await agent.get(`/usuarios/favoritos/${usuarioId}`);
+        return response.data?.message === "El usuario no tiene destinos favoritos" 
+            ? [] 
+            : response.data;
+        } catch (error) {
+        if (error.response?.status === 404) return [];
+        throw error;
+        }
+    }, []); 
 
     const createUsuario =  useMutation({
         mutationFn: async (nuevoUsuario) =>{
@@ -43,15 +55,18 @@ export const useUsuarios = () => {
 
     const loginUsuario = useMutation({
         mutationFn: async (credenciales) => {
-            const response = await agent.post('/usuarios/login', credenciales); 
-            return response.data;
+          const response = await agent.post('/usuarios/login', credenciales);
+          return response.data;
         },
         onSuccess: (data) => {
+          if (data.isAuthenticated) {
             localStorage.setItem('token', data.token);
-            console.log('Inicio de sesión exitoso:', data);
+            localStorage.setItem('userId', data.userId);
+            console.log('Datos del login:', data);
+          }
         },
         onError: (error) => {
-            console.error('Error al iniciar sesión:', error);
+          console.error('Error al iniciar sesión:', error);
         },
     });
 
@@ -61,7 +76,8 @@ export const useUsuarios = () => {
         createUsuario,
         deleteUsuario,
         updateUsuario,
-        loginUsuario
+        loginUsuario,
+        getFavoritos
     }
 
 }

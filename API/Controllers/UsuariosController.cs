@@ -75,17 +75,35 @@ public class UsuariosController : BaseApiController
     {
         try
         {
-            Console.WriteLine($"Correo electrónico recibido: {request.Email}");
-            Console.WriteLine($"Contraseña recibida: {request.Password}");
-
             var result = await _usuariosServices.Login(request.Email, request.Password);
 
             if (result.IsSuccess)
             {
-                return Ok(new { isAuthenticated = true }); 
+                return Ok(result.Value);
             }
 
             return Unauthorized(new { isAuthenticated = false });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error inesperado: {ex.Message}");
+            return StatusCode(500, "Error interno del servidor");
+        }
+    }
+
+    [HttpGet("favoritos/{usuarioId}")]
+    public async Task<ActionResult> GetFavoritosByUsuarioId(int usuarioId)
+    {
+        try
+        {
+            var result = await _usuariosServices.GetFavoritosByUsuarioId(usuarioId);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+
+            return NotFound(new { message = result.Error }); 
         }
         catch (Exception ex)
         {
