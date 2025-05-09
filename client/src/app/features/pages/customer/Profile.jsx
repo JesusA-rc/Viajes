@@ -1,57 +1,23 @@
-import React, { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useDestinos } from '../../../../lib/hooks/useDestinos';
-import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
 import MediaSection from '../../components/MediaSection';
 import styles from '../../../css/Grid2Column.module.css';
 import StatsSection from '../../components/Stats/StatsSection';
 import CrearActividad from '../../components/CrearActividad';
 import UserBanner from '../../components/UserBanner';
+import { useGetFavoritos } from '../../../../lib/hooks/useUsuarios';
 
 const Profile = () => {
   const usuarioId = parseInt(localStorage.getItem('userId'), 10);
-  console.log('Usuario ID:', usuarioId); // Depuración
 
   const { destinos, isPending } = useDestinos();
-  const { getFavoritos } = useUsuarios();
-  const [favoritos, setFavoritos] = useState([]);
-  const [loadingFavoritos, setLoadingFavoritos] = useState(true);
-  const [errorFavoritos, setErrorFavoritos] = useState(null);
+  const { data: favoritos, isLoadingFavoritos, isErrorFavoritos } = useGetFavoritos(usuarioId);
 
-  useEffect(() => {
-    if (!usuarioId || isNaN(usuarioId)) {
-      setErrorFavoritos('ID de usuario no válido');
-      setLoadingFavoritos(false);
-      return;
-    }
-
-    const cargarFavoritos = async () => {
-      try {
-        const datosFavoritos = await getFavoritos(usuarioId);
-        console.log('Favoritos recibidos:', datosFavoritos);
-        setFavoritos(datosFavoritos);
-      } catch (error) {
-        console.error('Error al cargar favoritos:', error);
-        setErrorFavoritos('Error al cargar favoritos');
-      } finally {
-        setLoadingFavoritos(false);
-      }
-    };
-
-    cargarFavoritos();
-  }, [usuarioId]);
-
-  if (isPending) {
-    return <Typography>Cargando destinos...</Typography>;
+  if (isErrorFavoritos) {
+    return <Typography color="error">Error al cargar los favoritos.</Typography>;
   }
 
-  if (loadingFavoritos) {
-    return <Typography>Cargando favoritos...</Typography>;
-  }
-
-  if (errorFavoritos) {
-    return <Typography color="error">{errorFavoritos}</Typography>;
-  }
+  const favoritosList = Array.isArray(favoritos) ? favoritos : [];
 
   const statsData = [
     { value: '496', label: 'T ' },
@@ -65,10 +31,20 @@ const Profile = () => {
 
       <Box sx={{ display: 'flex', width: '100%', padding: 10 }} className={styles.grid2}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className={styles.gridLeft}>
-          {favoritos.length > 0 && (
-            <MediaSection title='Favoritos' items={favoritos} />
+
+          {isLoadingFavoritos ? (
+              <Typography sx={{ color: 'white', textAlign: 'center' }}>Cargando favoritos...</Typography>
+            ) : favoritosList.length > 0 ? (
+              <MediaSection title='Favoritos' items={favoritosList} />
+            ) : (
+              <Typography sx={{ color: 'white', textAlign: 'center' }}>No hay favoritos disponibles.</Typography>
           )}
-          <MediaSection title='Categorias' items={destinos} />
+
+          {isPending ? (
+              <Typography sx={{ color: 'white', textAlign: 'center' }}>Cargando destinos...</Typography>
+            ) : (
+              <MediaSection title='Categorias' items={destinos} />
+          )}
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className={styles.gridRight}>
           <StatsSection stats={statsData} />

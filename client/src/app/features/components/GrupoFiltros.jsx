@@ -1,49 +1,33 @@
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import SearchBar from './SearchBar';
 import ListFilters from './Stats/ListFilters';
 import FilterDropdowns from './Stats/FilterDropdowns';
 import YearSlider from './Stats/yearSlide';
+import { FiltrosContext } from '../contexts/FiltrosContext';
 
 const GrupoFiltros = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [openMenuResponsive, setOpenMenuResponsive] = useState(false);
 
+    const { 
+      filtros, 
+      setFiltros,
+      dropdownFilters,
+      listFilters
+    } = useContext(FiltrosContext);
+
     const showMenu = !isMobile || openMenuResponsive;
 
-    const listFilters = ['All', 'Visitados', 'Planeados', 'No volvería a ir'];
+   const handleListFilterChange = useCallback((filter) => {
+        setFiltros(prev => ({ ...prev, estado: filter }));
+    }, [setFiltros]);
 
-    const dropdownFilters = [
-        {
-            name: 'Format',
-            options: ['All', 'Experiencias', 'Parques', 'Museos', 'Zoológicos'],
-        },
-        {
-            name: 'Genres',
-            options: ['All', 'Aventura', 'Cultura', 'Naturaleza', 'Ciudad', 'Playa'],
-        },
-        {
-            name: 'Country',
-            options: ['All', 'México', 'Estados Unidos', 'Canadá', 'Japón'],
-        },
-    ];
 
-    const [selectedFilter, setSelectedFilter] = useState('All');
-    const [selectedDropdownFilters, setSelectedDropdownFilters] = useState({
-        Format: undefined,
-        Genres: undefined,
-        Country: undefined,
-    });
-
-    const handleListFilterChange = (filter) => {
-        setSelectedFilter(filter);
-    };
-
-    const handleDropdownFilterChange = (filterName, value) => {
-        setSelectedDropdownFilters({ ...selectedDropdownFilters, [filterName]: value });
-    };
-
+    const handleDropdownFilterChange = useCallback((filterName, value) => {
+        setFiltros(prev => ({ ...prev, [filterName]: value }));
+    }, [setFiltros]);
 
     return (
         <Box sx={{ 
@@ -73,22 +57,28 @@ const GrupoFiltros = () => {
                 </Button>
             )}
 
-
             {showMenu && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <ListFilters
                         filters={listFilters}
-                        selectedFilter={selectedFilter}
+                        selectedFilter={filtros.estado}
                         onFilterChange={handleListFilterChange}
                     />
 
                     <FilterDropdowns
                         filters={dropdownFilters}
-                        selectedFilters={selectedDropdownFilters}
+                        selectedFilters={{
+                          format: filtros.format,
+                          genres: filtros.genres,
+                          country: filtros.country
+                        }}
                         onFilterChange={handleDropdownFilterChange}
                     />
 
-                    <YearSlider />
+                    <YearSlider 
+                        value={filtros.anio}
+                        onChange={(newValue) => setFiltros(prev => ({ ...prev, anio: newValue }))}
+                    />
                 </Box>
             )}
         </Box>

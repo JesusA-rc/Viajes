@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
 import agent from '../api/agent'
-import { useCallback } from 'react';
 
 export const useUsuarios = () => {
 
@@ -13,18 +12,6 @@ export const useUsuarios = () => {
             return response.data;
         }
     });
-
-    const getFavoritos = useCallback(async (usuarioId) => {
-        try {
-        const response = await agent.get(`/usuarios/favoritos/${usuarioId}`);
-        return response.data?.message === "El usuario no tiene destinos favoritos" 
-            ? [] 
-            : response.data;
-        } catch (error) {
-        if (error.response?.status === 404) return [];
-        throw error;
-        }
-    }, []); 
 
     const createUsuario =  useMutation({
         mutationFn: async (nuevoUsuario) =>{
@@ -76,8 +63,24 @@ export const useUsuarios = () => {
         createUsuario,
         deleteUsuario,
         updateUsuario,
-        loginUsuario,
-        getFavoritos
+        loginUsuario
     }
 
+}
+
+
+export function useGetFavoritos(usuarioId) {
+  return useQuery({
+    queryKey: ['favoritos', usuarioId],
+    queryFn: async () => {
+      const response = await agent.get(`/usuarios/favoritos/${usuarioId}`);
+      if (response.data?.message === "El usuario no tiene destinos favoritos") {
+        return [];
+      }
+      return response.data;
+    },
+    enabled: !!usuarioId,
+    staleTime: 5 * 60 * 1000, 
+    cacheTime: 10 * 60 * 1000, 
+  });
 }

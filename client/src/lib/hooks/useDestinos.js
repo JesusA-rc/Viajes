@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
 import agent from '../api/agent'
 
-import React from 'react'
-
 export const useDestinos = () => {
     const queryClient = useQueryClient();
 

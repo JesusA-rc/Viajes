@@ -87,6 +87,7 @@ public class EstadosDestinoController : BaseApiController
         }
     }
 
+    //Todos los destinos de un usuario
     [HttpGet("usuario/{usuarioId}")]
     public async Task<ActionResult<IEnumerable<EstadosDestinoDTO>>> GetByUsuarioId(int usuarioId)
     {

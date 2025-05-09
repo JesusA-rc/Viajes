@@ -19,7 +19,7 @@ const AdminAgregarCategoria = () => {
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding:2 }}>
             <Typography variant="h5">Agregar Categoría</Typography>
 
             <TextField

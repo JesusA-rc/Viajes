@@ -1,19 +1,14 @@
 import React from 'react'
-import { useDestinos } from '../../../../lib/hooks/useDestinos';
 import { Box, Typography } from '@mui/material';
 
-const CardDestinoNombre = () => {
-    const { destinos, isPending } = useDestinos();
+const CardDestinoNombre = ({itemCard}) => {
 
-    if (isPending) {
-        return <Typography variant="h6">Cargando destinos</Typography>;
-    }
 
   return (
 
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, width:'100%', alignItems:'center', justifyContent:'center'}}>
 
-        {destinos.map((destino) => (
+        {itemCard.map((destino) => (
             <Box
                 key={destino.id_categoria}
                 sx={{

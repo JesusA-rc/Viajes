@@ -22,20 +22,29 @@ namespace Application.Services
             _validator = validator;
         }
 
-        public async Task<IEnumerable<EstadosDestinoDTO>> GetAllAsync()
+        public async Task<IEnumerable<EstadosDestinoDetalleDTO>> GetAllAsync()
         {
-            var estados = await _context.EstadoDestino.ToListAsync();
-            return _mapper.Map<IEnumerable<EstadosDestinoDTO>>(estados);
+            var estados = await _context.EstadoDestino
+                .Include(ed => ed.Usuario)
+                .Include(ed => ed.Destino)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<EstadosDestinoDetalleDTO>>(estados);
         }
 
-        public async Task<EstadosDestinoDTO> GetByIdAsync(int id)
+        public async Task<EstadosDestinoDetalleDTO> GetByIdAsync(int id)
         {
-            var estado = await _context.EstadoDestino.FindAsync(id);
+            var estado = await _context.EstadoDestino
+                .Include(ed => ed.Usuario)
+                .Include(ed => ed.Destino)
+                .SingleOrDefaultAsync(ed => ed.Id == id);
+            
             if (estado == null)
             {
                 throw new KeyNotFoundException($"EstadoDestino con ID {id} no encontrado.");
             }
-            return _mapper.Map<EstadosDestinoDTO>(estado);
+            
+            return _mapper.Map<EstadosDestinoDetalleDTO>(estado);
         }
 
         public async Task<EstadosDestinoDTO> CreateAsync(EstadosDestinoDTO dto)
@@ -86,12 +95,15 @@ namespace Application.Services
         }
 
         //Todos los estados que tiene el usuario
-        public async Task<IEnumerable<EstadosDestinoDTO>> GetByUsuarioIdAsync(int usuarioId)
+        public async Task<IEnumerable<EstadosDestinoDetalleDTO>> GetByUsuarioIdAsync(int usuarioId)
         {
             var estados = await _context.EstadoDestino
+                .Include(ed => ed.Usuario)      
+                .Include(ed => ed.Destino)      
                 .Where(ed => ed.UsuarioId == usuarioId)
                 .ToListAsync();
-            return _mapper.Map<IEnumerable<EstadosDestinoDTO>>(estados);
+                
+            return _mapper.Map<IEnumerable<EstadosDestinoDetalleDTO>>(estados);
         }
 
         //
