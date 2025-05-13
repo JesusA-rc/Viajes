@@ -20,8 +20,8 @@ const NavBarCliente = () => {
         { text: 'Home', path: '/clientes/home' },
         { text: 'Profile', path: '/clientes/profile' },
         { text: 'Destinos List', path: '/clientes/destinos-list' },
-        { text: 'Categorias List', path: '/clientes/categorias-list' },
-        { text: 'Experiencias List', path: '/clientes/experiencias-list' },
+        { text: 'Estadisticas', path: '/clientes/estadisticas' },
+        { text: 'Buscar', path: '/clientes/buscar/destinos' },
         { text: 'Forum', path: '/clientes/forum' },
     ];
 

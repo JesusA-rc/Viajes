@@ -14,6 +14,8 @@ import ClienteLogin from '../features/pages/customer/ClienteLogin.jsx'
 import Profile from '../features/pages/customer/Profile.jsx'
 import ProtectedRoute from '../features/pages/customer/ProtectedRoute.jsx'
 import DestinosList from '../features/pages/customer/DestinosList.jsx'
+import Estadisticas from '../features/pages/customer/Estadisiticas.jsx'
+import BuscarPagina from '../features/pages/customer/BuscarPagina.jsx'
 
 export const router = createBrowserRouter([
     {
@@ -39,7 +41,9 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-            {path: '/clientes/destinos-list', element: <DestinosList/>}
+            {path: '/clientes/destinos-list', element: <DestinosList/>},
+            {path: '/clientes/estadisticas', element: <Estadisticas/>},
+            {path: '/clientes/buscar/destinos' , element: <BuscarPagina/>}
         ]
     }
 ])

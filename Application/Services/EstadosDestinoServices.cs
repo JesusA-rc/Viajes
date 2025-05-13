@@ -97,16 +97,52 @@ namespace Application.Services
         //Todos los estados que tiene el usuario
         public async Task<IEnumerable<EstadosDestinoDetalleDTO>> GetByUsuarioIdAsync(int usuarioId)
         {
-            var estados = await _context.EstadoDestino
-                .Include(ed => ed.Usuario)      
-                .Include(ed => ed.Destino)      
-                .Where(ed => ed.UsuarioId == usuarioId)
-                .ToListAsync();
-                
-            return _mapper.Map<IEnumerable<EstadosDestinoDetalleDTO>>(estados);
+            var query = from ed in _context.EstadoDestino
+                        join d in _context.Destinos on ed.DestinoId equals d.IdDestino
+                        join dc in _context.DestinoCategorias on d.IdDestino equals dc.ID_Destino into destinoCategorias
+                        from dc in destinoCategorias.DefaultIfEmpty()
+                        join c in _context.Categorias on dc.ID_Categoria equals c.IdCategoria into categorias
+                        from c in categorias.DefaultIfEmpty()
+                        where ed.UsuarioId == usuarioId
+                        group new { ed, c } by new { 
+                            ed.Id, 
+                            ed.UsuarioId, 
+                            ed.DestinoId, 
+                            ed.Estado,
+                            d.IdDestino,
+                            d.Nombre,
+                            d.Descripcion,
+                            d.Imagen,
+                            d.Pais,
+                            d.Region,
+                            UsuarioNombre = ed.Usuario.Nombre
+                        } into g
+                        select new EstadosDestinoDetalleDTO
+                        {
+                            Id = g.Key.Id,
+                            UsuarioId = g.Key.UsuarioId,
+                            UsuarioNombre = g.Key.UsuarioNombre,
+                            DestinoId = g.Key.DestinoId,
+                            Destino = new DestinoDto
+                            {
+                                IdDestino = g.Key.IdDestino,
+                                Nombre = g.Key.Nombre,
+                                Descripcion = g.Key.Descripcion,
+                                Imagen = g.Key.Imagen,
+                                Pais = g.Key.Pais,
+                                Region = g.Key.Region,
+                                Categorias = g.Where(x => x.c != null)
+                                            .Select(x => x.c.Nombre)
+                                            .Distinct()
+                                            .ToList()
+                            },
+                            Estado = g.Key.Estado
+                        };
+
+            return await query.ToListAsync();
         }
 
-        //
+
         public async Task<IEnumerable<EstadosDestinoDTO>> GetByDestinoIdAsync(int destinoId)
         {
             var estados = await _context.EstadoDestino

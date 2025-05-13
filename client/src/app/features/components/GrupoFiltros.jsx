@@ -69,7 +69,7 @@ const GrupoFiltros = () => {
                         filters={dropdownFilters}
                         selectedFilters={{
                           format: filtros.format,
-                          genres: filtros.genres,
+                          Categorias: filtros.Categorias,
                           country: filtros.country
                         }}
                         onFilterChange={handleDropdownFilterChange}

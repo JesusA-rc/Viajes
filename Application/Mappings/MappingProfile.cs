@@ -22,5 +22,8 @@ public class MappingProfile : Profile
         CreateMap<EstadoDestino, EstadosDestinoDetalleDTO>()
             .ForMember(dest => dest.UsuarioNombre, opt => opt.MapFrom(src => src.Usuario.Nombre))
             .ForMember(dest => dest.Destino, opt => opt.MapFrom(src => src.Destino));
+
+        CreateMap<DestinoCategoria, DestinoCategoriaDTO>().ReverseMap();
+
     }
 }

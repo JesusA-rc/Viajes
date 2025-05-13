@@ -21,4 +21,6 @@ public partial class Destinos
     public virtual ICollection<Categorias> IdCategoria { get; set; } = new List<Categorias>();
 
     public virtual ICollection<Favoritos> Favoritos { get; set; } = new List<Favoritos>();
+
+    public virtual ICollection<DestinoCategoria> DestinoCategoria { get; set; } = new List<DestinoCategoria>();
 }

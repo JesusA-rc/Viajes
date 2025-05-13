@@ -13,4 +13,6 @@ public partial class Categorias
     public string? Descripcion { get; set; }
     [JsonIgnore]
     public virtual ICollection<Destinos> IdDestinos { get; set; } = new List<Destinos>();
+
+    public virtual ICollection<DestinoCategoria> DestinoCategoria { get; set; } = new List<DestinoCategoria>();
 }

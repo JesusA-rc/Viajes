@@ -5,7 +5,7 @@ import NavBar from "./NavBar";
 import AdminNavBar from "./features/pages/Admin/AdminNavBar";
 import SidebarDrawer from "./features/components/SidebarDrawer";
 import { FiltrosProvider} from "./features/contexts/FiltrosContext";
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 
 function App() {
@@ -29,25 +29,30 @@ function App() {
     },
   ];
 
+  const queryClient = new QueryClient();
+
   return (
     <React.Fragment>
-      <FiltrosProvider>
-        <Box sx={{ backgroundColor: '#eeeeee', minHeight: '100vh'}}>
-          <CssBaseline />
-          {!(location.pathname === '/' || /^\/admin/.test(location.pathname) || location.pathname.startsWith("/clientes")) && <NavBar />}
-          {(/^\/admin/.test(location.pathname)) && 
-          <Box>
-              <AdminNavBar/>
-              <Box>
-                <SidebarDrawer menuItems={menuItems}/>
-              </Box>
+      <QueryClientProvider client={queryClient}>
+        <FiltrosProvider>
+          <Box sx={{ backgroundColor: '#eeeeee', minHeight: '100vh'}}>
+            <CssBaseline />
+            {!(location.pathname === '/' || /^\/admin/.test(location.pathname) || location.pathname.startsWith("/clientes")) && <NavBar />}
+            {(/^\/admin/.test(location.pathname)) && 
+            <Box>
+                <AdminNavBar/>
+                <Box>
+                  <SidebarDrawer menuItems={menuItems}/>
+                </Box>
+            </Box>
+            }
+            <Box>
+              <Outlet/>
+            </Box>
           </Box>
-          }
-          <Box>
-            <Outlet/>
-          </Box>
-        </Box>
-      </FiltrosProvider>
+        </FiltrosProvider>
+      </QueryClientProvider>
+
     </React.Fragment>
   )
 }

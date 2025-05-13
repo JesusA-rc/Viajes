@@ -24,6 +24,8 @@ public partial class ViajesContext : DbContext
     public virtual DbSet<Favoritos> Favoritos { get; set; }
 
     public DbSet<EstadoDestino> EstadoDestino { get; set; }
+    
+    public DbSet<DestinoCategoria> DestinoCategorias { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,7 +60,6 @@ public partial class ViajesContext : DbContext
                     j =>
                     {
                         j.HasKey("IdDestino", "IdCategoria").HasName("PK__Destinos__E79773B6D383AFD9");
-                        j.ToTable("DestinosCategorias");
                         j.IndexerProperty<int>("IdDestino").HasColumnName("ID_Destino");
                         j.IndexerProperty<int>("IdCategoria").HasColumnName("ID_Categoria");
                     });
@@ -105,6 +106,25 @@ public partial class ViajesContext : DbContext
             .WithMany()
             .HasForeignKey(ed => ed.DestinoId)
             .OnDelete(DeleteBehavior.Restrict);
+
+
+        // Configuración de la tabla Destino_Categoria
+        modelBuilder.Entity<DestinoCategoria>()
+            .HasKey(dc => new { dc.ID_Destino, dc.ID_Categoria });
+
+        modelBuilder.Entity<DestinoCategoria>()
+            .ToTable("Destino_Categoria"); 
+
+        // Configuración de las relaciones de la tabla Destino_Categoria
+        modelBuilder.Entity<DestinoCategoria>()
+            .HasOne(dc => dc.Destino)
+            .WithMany(d => d.DestinoCategoria)
+            .HasForeignKey(dc => dc.ID_Destino);
+
+        modelBuilder.Entity<DestinoCategoria>()
+            .HasOne(dc => dc.Categoria)
+            .WithMany(c => c.DestinoCategoria)
+            .HasForeignKey(dc => dc.ID_Categoria);
 
         OnModelCreatingPartial(modelBuilder);
     }

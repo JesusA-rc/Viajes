@@ -15,4 +15,6 @@ public class DestinoDto
     public string Pais { get; set; } = null!;
 
     public string? Region { get; set; }
+
+    public List<string> Categorias { get; set; } = new List<string>();
 }

@@ -95,13 +95,16 @@ public class EstadosDestinoController : BaseApiController
         return Ok(estados);
     }
 
+    
+
     [HttpGet("destino/{destinoId}")]
     public async Task<ActionResult<IEnumerable<EstadosDestinoDTO>>> GetByDestinoId(int destinoId)
     {
         var estados = await _estadosDestinoService.GetByDestinoIdAsync(destinoId);
         return Ok(estados);
     }
-
+    
+    
     [HttpGet("estado/{estado}")]
     public async Task<ActionResult<IEnumerable<EstadosDestinoDTO>>> GetByEstado(string estado)
     {

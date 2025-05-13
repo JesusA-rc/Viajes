@@ -12,9 +12,15 @@ const DestinosList = () => {
     const { data: allDestinosUsuarios, isLoading } = useGetEstadosByUsuarioId(usuarioId);
     const { filtros } = useContext(FiltrosContext); 
 
-    const destinosFiltrados = filtros.estado === 'All' 
-        ? allDestinosUsuarios 
-        : allDestinosUsuarios?.filter(destino => destino.estado === filtros.estado);
+    const destinosFiltrados = allDestinosUsuarios?.filter(destino => {
+        const estadoMatch = filtros.estado === 'All' || destino.estado === filtros.estado;
+        const categoriaMatch = (filtros.Categorias === 'All' || filtros.Categorias == undefined) || 
+                             destino.destino.categorias?.includes(filtros.Categorias);
+        const busquedaMatch = !filtros.busqueda || 
+                            destino.destino.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase());
+        
+        return estadoMatch && categoriaMatch && busquedaMatch;
+    });
     
     return (
         <Box sx={{ backgroundColor: '#222831', minHeight: '100vh' }}>
@@ -47,7 +53,8 @@ const DestinosList = () => {
                                 <CardDestinoNombre 
                                     itemCard={destinosFiltrados?.map(estado => ({
                                         ...estado.destino, 
-                                        estado: estado.estado 
+                                        estado: estado.estado,
+                                        categorias: estado.destino.categorias
                                     }))}
                                 />
                             )}

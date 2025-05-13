@@ -1,8 +1,15 @@
 import React, { createContext, useState } from 'react';
+import { useCategorias} from '../../../lib/hooks/useCategorias'
 
 export const FiltrosContext = createContext();
 
 export const FiltrosProvider = ({ children }) => {
+
+  const {categorias, isPending} = useCategorias();
+
+  const opcionesCategorias = isPending 
+    ? ['All', 'Cargando categorías...'] 
+    : ['All', ...(categorias?.map(c => c.nombre) || [])];
     
   const dropdownFilters = [
     {
@@ -13,7 +20,7 @@ export const FiltrosProvider = ({ children }) => {
     {
       name: 'Categorias',
       label: 'Categorias',
-      options: ['All', 'Ciudades Historicas', 'Playas tropicales', 'Acuarios'],
+      options: opcionesCategorias,
     },
     {
       name: 'country',
@@ -26,9 +33,9 @@ export const FiltrosProvider = ({ children }) => {
 
   const [filtros, setFiltros] = useState({
     estado: 'All',
-    format: 'All',
-    Categorias: 'All',
-    country: 'All',
+    format: undefined,
+    Categorias: undefined,
+    country: undefined,
     anio: [2000, 2023],
     busqueda: ''
   });

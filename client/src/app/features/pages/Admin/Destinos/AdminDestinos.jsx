@@ -24,7 +24,7 @@ const AdminDestinos = () => {
     }
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 4 }}>
             <Typography variant="h5">Lista de destinos</Typography>
 
             <TableContainer component={Paper}>

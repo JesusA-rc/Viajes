@@ -21,13 +21,15 @@ builder.Services.AddScoped<CategoriasServices>();
 builder.Services.AddScoped<UsuariosServices>();
 builder.Services.AddScoped<FavoritosServices>();
 builder.Services.AddScoped<EstadosDestinoService>();
+builder.Services.AddScoped<DestinoCategoriaService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddValidatorsFromAssemblyContaining<CategoriaValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<DestinoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<FavoritosServices>();
+builder.Services.AddValidatorsFromAssemblyContaining<FavoritosValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<EstadosDestinoService>();
+builder.Services.AddValidatorsFromAssemblyContaining<DestinoCategoriaValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
 
 
