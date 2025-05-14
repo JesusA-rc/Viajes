@@ -16,12 +16,23 @@ export const useDestinoCategoria = () => {
     // Crear nueva relación
     const createRelacion = useMutation({
         mutationFn: async (nuevaRelacion) => {
-            await agent.post('/destinocategoria', nuevaRelacion);
+            try {
+                const response = await agent.post('/destinocategoria', nuevaRelacion);
+                return response.data;
+            } catch (error) {
+                if (error.response?.data?.error) {
+                    if (Array.isArray(error.response.data.error)) {
+                        throw new Error(error.response.data.error.join('\n'));
+                    }
+                    throw new Error(error.response.data.error);
+                }
+                throw error;
+            }
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['relacionesDestinoCategoria'] });
-            // También invalidar las queries específicas por destino si es necesario
-        },
+            alert('Relación creada exitosamente!');
+        }
     });
 
     // Eliminar relación
@@ -31,7 +42,7 @@ export const useDestinoCategoria = () => {
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['relacionesDestinoCategoria'] });
-            // Invalidar también las queries de categorías por destino
+
         },
     });
 

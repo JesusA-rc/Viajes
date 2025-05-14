@@ -8,19 +8,24 @@ import { FiltrosContext } from '../../contexts/FiltrosContext';
 
 const DestinosList = () => {
     const usuarioId = parseInt(localStorage.getItem('userId'), 10);
+
     
     const { data: allDestinosUsuarios, isLoading } = useGetEstadosByUsuarioId(usuarioId);
     const { filtros } = useContext(FiltrosContext); 
 
-    const destinosFiltrados = allDestinosUsuarios?.filter(destino => {
-        const estadoMatch = filtros.estado === 'All' || destino.estado === filtros.estado;
-        const categoriaMatch = (filtros.Categorias === 'All' || filtros.Categorias == undefined) || 
-                             destino.destino.categorias?.includes(filtros.Categorias);
-        const busquedaMatch = !filtros.busqueda || 
-                            destino.destino.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase());
-        
-        return estadoMatch && categoriaMatch && busquedaMatch;
-    });
+const destinosFiltrados = allDestinosUsuarios?.filter(destino => {
+    const estadoMatch = filtros.estado === 'All' || destino.estado === filtros.estado;
+    
+    const categoriaMatch = (filtros.Categorias === 'All' || filtros.Categorias == undefined) || 
+        destino.destino.categorias?.some(c => 
+            c.nombre === filtros.Categorias
+        );
+    
+    const busquedaMatch = !filtros.busqueda || 
+                        destino.destino.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase());
+    
+    return estadoMatch && categoriaMatch && busquedaMatch;
+});
     
     return (
         <Box sx={{ backgroundColor: '#222831', minHeight: '100vh' }}>

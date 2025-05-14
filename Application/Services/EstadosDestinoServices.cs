@@ -132,7 +132,12 @@ namespace Application.Services
                                 Pais = g.Key.Pais,
                                 Region = g.Key.Region,
                                 Categorias = g.Where(x => x.c != null)
-                                            .Select(x => x.c.Nombre)
+                                            .Select(x => new CategoriaDto
+                                            {
+                                                IdCategoria = x.c.IdCategoria,
+                                                Nombre = x.c.Nombre,
+                                                Descripcion = x.c.Descripcion
+                                            })
                                             .Distinct()
                                             .ToList()
                             },

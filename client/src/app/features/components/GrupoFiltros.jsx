@@ -18,7 +18,7 @@ const GrupoFiltros = () => {
       listFilters
     } = useContext(FiltrosContext);
 
-    const showMenu = !isMobile || openMenuResponsive;
+   const showMenu = !isMobile || openMenuResponsive;
 
    const handleListFilterChange = useCallback((filter) => {
         setFiltros(prev => ({ ...prev, estado: filter }));

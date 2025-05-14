@@ -20,21 +20,30 @@ public class DestinoCategoriaService
         _validator = validator;
     }
 
-    public async Task<Result<IEnumerable<DestinoCategoriaDTO>>> GetAll()
+    public async Task<Result<IEnumerable<DestinoCategoriaViewDTO>>> GetAll()
     {
         var relaciones = await _context.DestinoCategorias
             .Include(dc => dc.Destino)
             .Include(dc => dc.Categoria)
+            .Select(dc => new DestinoCategoriaViewDTO
+            {
+                ID_Destino = dc.ID_Destino,
+                ID_Categoria = dc.ID_Categoria,
+                NombreCategoria = dc.Categoria.Nombre,
+                NombreDestino = dc.Destino.Nombre,
+                ImagenDestino = dc.Destino.Imagen
+            })
             .ToListAsync();
 
-        if (relaciones == null || relaciones.Count == 0)
+        if (!relaciones.Any())
         {
-            return Result<IEnumerable<DestinoCategoriaDTO>>.Failure("No se encontraron relaciones", 404);
+            return Result<IEnumerable<DestinoCategoriaViewDTO>>.Failure("No se encontraron relaciones", 404);
         }
 
-        var relacionesDto = _mapper.Map<IEnumerable<DestinoCategoriaDTO>>(relaciones);
-        return Result<IEnumerable<DestinoCategoriaDTO>>.Success(relacionesDto);
+        return Result<IEnumerable<DestinoCategoriaViewDTO>>.Success(relaciones);
     }
+
+
     //Todas las categorias que tiene un destino
     public async Task<Result<IEnumerable<DestinoCategoriaDTO>>> GetAllByDestino(int idDestino){
 
@@ -53,8 +62,11 @@ public class DestinoCategoriaService
         var validationResult = await _validator.ValidateAsync(dto);
         if (!validationResult.IsValid)
         {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            return Result<DestinoCategoriaDTO>.Failure(new { Errors = errors }, 400);
+            var errorMessages = validationResult.Errors
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            
+            return Result<DestinoCategoriaDTO>.Failure(errorMessages, 400);
         }
 
         var nuevaRelacion = _mapper.Map<DestinoCategoria>(dto);

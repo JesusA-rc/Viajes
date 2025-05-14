@@ -25,10 +25,23 @@ export const useCategorias = () =>{
 
     const createCategoria = useMutation({
         mutationFn: async (nuevaCategoria) => {
-            await agent.post('/categorias', nuevaCategoria);
+            try {
+                const response = await agent.post('/categorias', nuevaCategoria);
+                return response.data;
+            } catch (error) {
+                if (error.response?.data?.error) {
+                    if (Array.isArray(error.response.data.error)) {
+                        throw new Error(error.response.data.error.join('\n'));
+                    }
+                    throw new Error(error.response.data.error);
+                }
+                throw error;
+            }
+
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['categorias'] });
+            alert('Categoría creada exitosamente!');
         },
     });
 

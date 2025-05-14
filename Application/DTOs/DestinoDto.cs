@@ -16,5 +16,6 @@ public class DestinoDto
 
     public string? Region { get; set; }
 
-    public List<string> Categorias { get; set; } = new List<string>();
+    public List<CategoriaDto> Categorias { get; set; } = new List<CategoriaDto>();
+
 }

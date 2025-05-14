@@ -25,13 +25,34 @@ public class DestinosServices
 
     public async Task<Result<IEnumerable<DestinoDto>>> GetAll()
     {
-        var destinos = await _context.Destinos.ToListAsync();
-        if (destinos == null || destinos.Count == 0)
+        var destinos = await _context.Destinos
+            .Include(d => d.DestinoCategoria)  // Asegúrate que este es el nombre correcto de la propiedad
+                .ThenInclude(dc => dc.Categoria)
+            .ToListAsync();
+
+        if (!destinos.Any())
         {
             return Result<IEnumerable<DestinoDto>>.Failure("No se encontraron destinos", 404);
         }
 
-        var destinosDto = _mapper.Map<IEnumerable<DestinoDto>>(destinos);
+        var destinosDto = destinos.Select(d => new DestinoDto
+        {
+            IdDestino = d.IdDestino,
+            Nombre = d.Nombre,
+            Descripcion = d.Descripcion,
+            Imagen = d.Imagen,
+            Pais = d.Pais,
+            Region = d.Region,
+            Categorias = d.DestinoCategoria
+                .Select(dc => new CategoriaDto 
+                {
+                    IdCategoria = dc.Categoria.IdCategoria,
+                    Nombre = dc.Categoria.Nombre,
+                    Descripcion = dc.Categoria.Descripcion
+                })
+                .ToList()
+        });
+
         return Result<IEnumerable<DestinoDto>>.Success(destinosDto);
     }
 

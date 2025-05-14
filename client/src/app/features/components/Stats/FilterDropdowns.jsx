@@ -3,7 +3,7 @@ import { Box, Typography, Select, MenuItem, IconButton } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-const FilterDropdowns = ({ filters, selectedFilters, onFilterChange }) => {
+const FilterDropdowns = ({ filters, selectedFilters, onFilterChange, fDirection = 'column' }) => {
     const handleClear = (filterName, event) => {
         event.stopPropagation();
         event.preventDefault();
@@ -13,9 +13,9 @@ const FilterDropdowns = ({ filters, selectedFilters, onFilterChange }) => {
     return (
         <Box sx={{ backgroundColor: '#222831', padding: 2 }}>
             <Typography variant="subtitle1" sx={{ color: 'white', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                Filters
+                Filtros
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', flexDirection: fDirection, gap: 1 }}>
                 {filters.map((filterGroup) => (
                     <Box key={filterGroup.name} sx={{ position: 'relative' }}>
                         <Select

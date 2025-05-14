@@ -16,6 +16,8 @@ import ProtectedRoute from '../features/pages/customer/ProtectedRoute.jsx'
 import DestinosList from '../features/pages/customer/DestinosList.jsx'
 import Estadisticas from '../features/pages/customer/Estadisiticas.jsx'
 import BuscarPagina from '../features/pages/customer/BuscarPagina.jsx'
+import AdminVer from '../features/pages/Admin/AdminVer.jsx'
+import AdminCrear from '../features/pages/AdminCrear.jsx'
 
 export const router = createBrowserRouter([
     {
@@ -43,7 +45,9 @@ export const router = createBrowserRouter([
             },
             {path: '/clientes/destinos-list', element: <DestinosList/>},
             {path: '/clientes/estadisticas', element: <Estadisticas/>},
-            {path: '/clientes/buscar/destinos' , element: <BuscarPagina/>}
+            {path: '/clientes/buscar/destinos' , element: <BuscarPagina/>},
+            {path: '/adminDestinos/ver', element: <AdminVer/>},
+            {path: '/adminDestinos/crear', element:<AdminCrear/>}
         ]
     }
 ])

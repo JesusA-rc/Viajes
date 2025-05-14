@@ -5,7 +5,6 @@ const CardDestinoNombre = ({itemCard}) => {
 
 
   return (
-
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, width:'100%', alignItems:'center', justifyContent:'center'}}>
 
         {itemCard.map((destino) => (
