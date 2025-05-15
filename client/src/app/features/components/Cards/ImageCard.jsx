@@ -1,12 +1,60 @@
-import React, { useState } from 'react';
-import { Box, Card, CardContent, CardMedia, Typography, IconButton, Tooltip } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  IconButton,
+  Tooltip,
+  Modal,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+  Slider
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import { useEstadosDestino } from '../../../../lib/hooks/useEstadosDestino' 
 
-const ImageCard = ({ image, title, idDestino }) => {
+const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [estado, setEstado] = useState('');
+  const [calificacion, setCalificacion] = useState(5);
+
+  const estados = ['Visitados', 'Planeados', 'No volvería a ir'];
+  const { updateEstado } = useEstadosDestino();
+  const { createEstado } = useEstadosDestino();
+
+  useEffect(() => {
+    if (estadoUsuario) {
+      setEstado(estadoUsuario.estado || 'Planeados');
+      setCalificacion(estadoUsuario.calificacion || 5);
+    }
+  }, [estadoUsuario, openModal]);
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleSubmit = () => {
+    if (estadoUsuario && estadoUsuario.id) {
+        updateEstado.mutate({ id: estadoUsuario.id, estado });
+        console.log("Actualizo correctamente.");
+    }else{
+      createEstado.mutate({ UsuarioId: usuarioId, DestinoId: destinoId, Estado: estado});
+    }
+
+    handleCloseModal();
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+
       <Box
         sx={{
           position: 'relative',
@@ -22,7 +70,6 @@ const ImageCard = ({ image, title, idDestino }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-
         <Box
           component="img"
           sx={{
@@ -38,14 +85,15 @@ const ImageCard = ({ image, title, idDestino }) => {
         {isHovered && (
           <Tooltip title="Editar">
             <IconButton
+              onClick={handleOpenModal}
               sx={{
                 position: 'absolute',
                 bottom: 46,
                 right: 8,
                 color: 'white',
-                backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.9)', 
+                  backgroundColor: 'rgba(0, 0, 0, 0.9)',
                 },
               }}
             >
@@ -58,6 +106,72 @@ const ImageCard = ({ image, title, idDestino }) => {
           {title}
         </Typography>
       </Box>
+
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-editar-destino"
+        aria-describedby="modal-editar-destino"
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 4,
+          borderRadius: 2
+        }}>
+          <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+            Editar {title}
+          </Typography>
+
+          <FormControl fullWidth sx={{ mb: 3 }}>
+            <InputLabel id="estado-label">Estado</InputLabel>
+            <Select
+              labelId="estado-label"
+              value={estado}
+              label="Estado"
+              onChange={(e) => setEstado(e.target.value)}
+            >
+              {estados.map((estado) => (
+                <MenuItem key={estado} value={estado}>
+                  {estado}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography id="calificacion-label" gutterBottom>
+              Calificación (1-10)
+            </Typography>
+            <Slider
+              value={calificacion}
+              onChange={(e, newValue) => setCalificacion(newValue)}
+              aria-labelledby="calificacion-label"
+              step={1}
+              marks
+              min={1}
+              max={10}
+              valueLabelDisplay="auto"
+            />
+          </Box>
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+            <Button onClick={handleCloseModal} variant="outlined">
+              Cancelar
+            </Button>
+            <Button onClick={handleSubmit} variant="contained" color="primary">
+              Guardar
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+
     </Box>
   );
 };

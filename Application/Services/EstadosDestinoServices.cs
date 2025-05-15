@@ -63,22 +63,22 @@ namespace Application.Services
             return _mapper.Map<EstadosDestinoDTO>(estado);
         }
 
-        public async Task UpdateAsync(EstadosDestinoDTO dto)
+        public async Task UpdateEstadoAsync(int id, string nuevoEstado)
         {
-            var validationResult = await _validator.ValidateAsync(dto);
-            if (!validationResult.IsValid)
+            if (!new[] { "Visitados", "Planeados", "No volvería a ir" }.Contains(nuevoEstado))
             {
-                throw new ValidationException(validationResult.Errors);
+                throw new ValidationException("Estado no válido");
             }
 
-            var estadoExistente = await _context.EstadoDestino.FindAsync(dto.Id);
-            if (estadoExistente == null)
+            var estadoExistente = await _context.EstadoDestino
+                .Where(ed => ed.Id == id)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(ed => ed.Estado, nuevoEstado));
+            
+            if (estadoExistente == 0)
             {
-                throw new KeyNotFoundException($"EstadoDestino con ID {dto.Id} no encontrado.");
+                throw new KeyNotFoundException($"EstadoDestino con ID {id} no encontrado.");
             }
-
-            _mapper.Map(dto, estadoExistente);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)

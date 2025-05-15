@@ -19,20 +19,31 @@ const FilterDropdowns = ({ filters, selectedFilters, onFilterChange, fDirection 
                 {filters.map((filterGroup) => (
                     <Box key={filterGroup.name} sx={{ position: 'relative' }}>
                         <Select
-                            value={selectedFilters[filterGroup.name] || ''}
-                            onChange={(e) => onFilterChange(filterGroup.name, e.target.value)}
-                            displayEmpty
-                            IconComponent={selectedFilters[filterGroup.name] ? () => null : ArrowDropDownIcon}
-                            sx={{
-                                width: '100%',
-                                color: 'white',
-                                '& .MuiSelect-select': {
-                                    paddingRight: '40px !important',
-                                },
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'white',
-                                },
-                            }}
+                        value={selectedFilters[filterGroup.name] || ''}
+                        onChange={(e) => onFilterChange(filterGroup.name, e.target.value)}
+                        displayEmpty
+                        IconComponent={selectedFilters[filterGroup.name] ? () => null : ArrowDropDownIcon}
+                        MenuProps={{
+                            PaperProps: {
+                            style: {
+                                maxHeight: 200, 
+                                overflowY: 'auto', 
+                            },
+                            },
+                        }}
+                        sx={{
+                            width: '200px',
+                            color: 'white',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            '& .MuiSelect-select': {
+                            paddingRight: '40px !important',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: 'white',
+                            },
+                        }}
                         >
                             <MenuItem value="">{filterGroup.name}</MenuItem>
                             {filterGroup.options.map((option) => (

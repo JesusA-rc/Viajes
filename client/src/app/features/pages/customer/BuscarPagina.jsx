@@ -6,12 +6,26 @@ import ImageCard from '../../components/Cards/ImageCard';
 import { useDestinos } from '../../../../lib/hooks/useDestinos';
 import { FiltrosContext } from '../../contexts/FiltrosContext';
 import FilterDropdowns from '../../components/Stats/FilterDropdowns';
+import { useGetEstadosByUsuarioId } from '../../../../lib/hooks/useEstadosDestino';
 
 const BuscarPagina = () => {
-  const { destinos, isPending } = useDestinos();
+  const usuarioId = parseInt(localStorage.getItem('userId'), 10);
+
+  const { destinosConCategorias, isPendingConCategorias } = useDestinos();
+
+  const { data: estadosUsuario, isLoading: isLoadingEstados } = useGetEstadosByUsuarioId(usuarioId);
+
+  const destinosCombinados = destinosConCategorias?.map(destino => {
+    const estadoUsuario = estadosUsuario?.find(e => e.destinoId === destino.idDestino);
+    return {
+        ...destino,
+        estadoUsuario: estadoUsuario || null
+      };
+  });
+
   const { filtros, dropdownFilters, setFiltros } = useContext(FiltrosContext);
 
-  const destinosFiltrados = destinos?.filter(destino => {
+  const destinosFiltrados = destinosCombinados?.filter(destino => {
     const coincideTexto = !filtros.busqueda || 
       destino.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase());
 
@@ -29,11 +43,11 @@ const BuscarPagina = () => {
   }, [setFiltros]);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831', minHeight:'100vh' }}>
       <NavBarCliente />
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, padding: 3 }}>
         <Box sx={{display: 'flex', alignItems:'center', justifyContent:'center', flexWrap: 'wrap'}}>
-          <FormControl fullWidth sx={{ mb: 3, maxWidth: 300 }}>
+          <FormControl fullWidth sx={{ mb: 3, maxWidth: '50%' }}>
             <SearchBar />
           </FormControl>
 
@@ -47,10 +61,13 @@ const BuscarPagina = () => {
             onFilterChange={handleDropdownFilterChange}
             fDirection='row'
           />
+
+
+
         </Box>
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
-          {isPending ? (
+          {(isPendingConCategorias || isLoadingEstados) ?  (
             <Typography variant='h6' sx={{ color: 'white', fontWeight: 'bold' }}>
               Cargando destinos...
             </Typography>
@@ -60,7 +77,9 @@ const BuscarPagina = () => {
                 key={d.idDestino}
                 image={d.imagen}
                 title={d.nombre}
-                idDestino={d.idDestino}
+                destinoId = {d.idDestino}
+                estadoUsuario={d.estadoUsuario}
+                usuarioId = {usuarioId}
               />
             ))
           ) : (

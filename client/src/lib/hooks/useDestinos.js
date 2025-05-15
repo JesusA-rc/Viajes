@@ -12,6 +12,14 @@ export const useDestinos = () => {
         }
     });
 
+    const { data: destinosConCategorias, isPending: isPendingConCategorias } = useQuery({
+        queryKey: ['destinos', 'with-categories'],
+        queryFn: async () => {
+            const response = await agent.get('/destinos/with-categories');
+            return response.data;
+        }
+    });
+
     const createDestino =  useMutation({
         mutationFn: async (nuevoDestino) =>{
             await agent.post('/destinos', nuevoDestino);
@@ -44,7 +52,9 @@ export const useDestinos = () => {
         isPending,
         createDestino,
         deleteDestino,
-        updateDestino
+        updateDestino,
+        destinosConCategorias, 
+        isPendingConCategorias, 
     };
 }
 

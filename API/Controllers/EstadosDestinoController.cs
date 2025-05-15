@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Application.Services;
 using FluentValidation;
+using Application.DTOs.EstadoDestino;
 
 namespace API.Controllers;
 
@@ -51,16 +52,14 @@ public class EstadosDestinoController : BaseApiController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, EstadosDestinoDTO dto)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateEstadoDestinoDTO dto)
     {
-        if (id != dto.Id)
-        {
-            return BadRequest("ID en la URL no coincide con el ID en el cuerpo de la solicitud.");
-        }
+        if (dto == null)
+            return BadRequest("Datos inválidos.");
 
         try
         {
-            await _estadosDestinoService.UpdateAsync(dto);
+            await _estadosDestinoService.UpdateEstadoAsync(id, dto.Estado);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
@@ -89,7 +88,7 @@ public class EstadosDestinoController : BaseApiController
 
     //Todos los destinos de un usuario
     [HttpGet("usuario/{usuarioId}")]
-    public async Task<ActionResult<IEnumerable<EstadosDestinoDTO>>> GetByUsuarioId(int usuarioId)
+    public async Task<ActionResult<IEnumerable<EstadosDestinoDetalleDTO>>> GetByUsuarioId(int usuarioId)
     {
         var estados = await _estadosDestinoService.GetByUsuarioIdAsync(usuarioId);
         return Ok(estados);

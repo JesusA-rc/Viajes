@@ -21,6 +21,13 @@ public class DestinosController : BaseApiController
         return HandleResult(result);
     }
 
+    [HttpGet("with-categories")]
+    public async Task<IActionResult> GetDestinosWithCategories()
+    {
+        var result = await _destinosServices.GetAllWithCategories();
+        return HandleResult(result);
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Destinos>> GetDestino(int id)
     {

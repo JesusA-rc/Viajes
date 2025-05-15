@@ -24,12 +24,12 @@ export function useEstadosDestino() {
   });
 
   const updateEstado = useMutation({
-    mutationFn: async (estadoActualizado) => {
-      const response = await agent.put(`/EstadosDestino/${estadoActualizado.id}`, estadoActualizado);
-      return response.data; 
+    mutationFn: async ({ id, estado }) => {
+      const response = await agent.put(`/EstadosDestino/${id}`, { estado });
+      return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['estadosDestino'] }); 
+      queryClient.invalidateQueries({ queryKey: ['estadosDestino'] });
     },
   });
 
