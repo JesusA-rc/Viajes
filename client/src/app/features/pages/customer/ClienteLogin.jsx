@@ -2,43 +2,33 @@ import React from 'react';
 import { Box, Typography, TextField, Button, Grid, Paper } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from "react-router-dom";
+import { loginSchema } from '../../../../lib/schemas/loginSchema';
+import { zodResolver } from "@hookform/resolvers/zod";
+import TextInput from '../../components/TextInput';
+import { toast } from 'react-toastify';
 
 const ClienteLogin = () => {
     const navigate = useNavigate();
     const backgroundImage = 'https://img.pikbest.com/backgrounds/20190423/painted-travel-background-for-travel-agency_1808534.jpg!bw700';
   
-    const { loginUsuario } = useUsuarios();
+    const { loginUsuario,} = useUsuarios();
 
-    const OnSubmit = async (data) => {
-      try {
-          const response = await loginUsuario.mutateAsync(data); 
-          console.log('Respuesta del backend:', response); 
-  
-          const isAuthenticated = response?.isAuthenticated;
-  
-          if (isAuthenticated) {
-              localStorage.setItem('isAuthenticated', 'true'); 
-              alert('Inicio de sesión exitoso');
-              navigate('/clientes/profile'); 
-              reset();
-          } else {
-              alert('Credenciales incorrectas');
-          }
-      } catch (error) {
-          alert(`Credenciales incorrectas ${data.email} PASS ${data.password}`);
-          console.error('Error al iniciar sesión:', error);
+    const { control, handleSubmit, formState: {isValid, isSubmitting} } = useForm({
+        mode: 'onTouched',
+        resolver: zodResolver(loginSchema) 
+    });
+
+  const OnSubmit = async (data) => {
+    await loginUsuario.mutateAsync(data,{
+      onSuccess: () =>{
+          navigate(location.state?.from  || '/clientes/profile')
+      },
+      onError: () =>{
+        toast.error("Credenciales incorrectas.");
       }
+    });
   };
-
-    const {
-      register,
-      handleSubmit,
-      reset,
-      formState: { errors },
-    } = useForm();
-
-  
   
     return (
       <Box
@@ -69,86 +59,18 @@ const ClienteLogin = () => {
   
           <Box component="form" onSubmit={handleSubmit(OnSubmit)} noValidate sx={{ mt: 2 }}>
 
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Correo Electrónico"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              {...register('email', {
-                required: 'El correo electrónico es obligatorio',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Ingrese un correo electrónico válido',
-                },
-              })}
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'primary.main',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'primary.main',
-                  },
-                },
-                '& .MuiOutlinedInput-input': {
-                  borderBottom: '0.5px solid gray',
-                },
-              }}
-            />
+              <TextInput label='Email' control={control} name='email'/>
+              <TextInput label='Password' type='password' control={control} name='password'/>
   
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              {...register('password', {
-                required: 'La contraseña es obligatoria',
-                minLength: {
-                  value: 6,
-                  message: 'La contraseña debe tener al menos 6 caracteres',
-                },
-              })}
-              error={!!errors.password}
-              helperText={errors.password?.message}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'primary.main',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'primary.main',
-                  },
-                },
-                '& .MuiOutlinedInput-input': {
-                  borderBottom: '0.5px solid gray',
-                },
-              }}
-            />
-  
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2, backgroundColor: '#ff0000' }}
-            >
-              Iniciar Sesión
-            </Button>
+              <Button
+                type="submit"
+                disabled={!isValid || isSubmitting}
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2, backgroundColor: '#ff0000' }}
+              >
+                Iniciar Sesión
+              </Button>
           </Box>
         </Paper>
       </Box>

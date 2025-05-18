@@ -4,8 +4,15 @@ import React, {useState} from 'react'
 import GrupoBotones from '../../components/buttons/GrupoBotones';
 import { useGetEstadosByUsuarioId } from '../../../../lib/hooks/useEstadosDestino'; 
 import CardEstadisticas from '../../components/Cards/CardEstadisticas';
+import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
 
 const Estadisiticas = () => {
+
+    const { currentUser, loadingUserInfo } = useUsuarios();
+    const { data: allDestinosUsuarios, isLoading } = useGetEstadosByUsuarioId(
+        !loadingUserInfo && currentUser ? currentUser.id : null
+    );
+ 
     const listEstadisticas = ['Categorias','Guias','Turismo'];
     const [activeButton, setActiveButton] = useState('1'); 
     const buttons = [
@@ -13,34 +20,40 @@ const Estadisiticas = () => {
         { value: '2', label: 'Promedio' },
     ];
 
-    const usuarioId = parseInt(localStorage.getItem('userId'), 10);
-    const { data: allDestinosUsuarios, isLoading } = useGetEstadosByUsuarioId(usuarioId);
-
     if(isLoading){
         return <Typography>Cargando estadisticas...</Typography>
     }   
 
     const destinosPorCategoria = allDestinosUsuarios?.reduce((acc, destinoUsuario) => {
         destinoUsuario.destino.categorias?.forEach(categoria => {
-            if (!acc[categoria]) {
-                acc[categoria] = [];
+            if (!acc[categoria.nombre]) {
+            acc[categoria.nombre] = {
+                idCategoria: categoria.idCategoria,
+                nombreCategoria: categoria.nombre,
+                destinos: []
+            };
             }
-            acc[categoria].push({
+
+            acc[categoria.nombre].destinos.push({
+                idEstado: destinoUsuario.id, 
                 idDestino: destinoUsuario.destino.idDestino,
                 nombre: destinoUsuario.destino.nombre,
                 imagen: destinoUsuario.destino.imagen,
                 estado: destinoUsuario.estado
             });
         });
+
         return acc;
     }, {});
+
+    console.log("Destinos categorias:", JSON.stringify(destinosPorCategoria, null, 2));
     
     console.log(allDestinosUsuarios)
 
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831', minHeight: '100vh' }}>
         <UserBanner/>
         <Box sx={{ 
                 display:'flex',
@@ -57,12 +70,12 @@ const Estadisiticas = () => {
                     <Grid item xs={12} md={3}>
                         <Box sx={{display:'flex',flexDirection:'column', gap:2,width:'100%',bgcolor: '#393e46',padding:.5}}>
                             {
-                                listEstadisticas.length > 0 &&
-                                listEstadisticas.map((e,index) =>
-                                    <Box sx={{display:'flex',padding:0.5,width:'100%', cursor:'pointer'}}>
-                                        <Typography variant='subtitle2' key={index} sx={{color:'white', fontWeight:'bold'}}>{e}</Typography>
-                                    </Box>
-                                )
+                                listEstadisticas.length > 0 && 
+                                    listEstadisticas.map((e,index) =>
+                                        <Box sx={{display:'flex',padding:0.5,width:'100%', cursor:'pointer'}}>
+                                            <Typography variant='subtitle2' key={index} sx={{color:'white', fontWeight:'bold'}}>{e}</Typography>
+                                        </Box>
+                                ) 
                             }
                         </Box>
 
@@ -90,15 +103,19 @@ const Estadisiticas = () => {
                            </Box>
 
                            <Box sx={{display:'flex', alignItems:'center', justifyContent:'center' , width:'100%',flexWrap:'wrap',mt:4, gap: 4}}>
-                                {destinosPorCategoria && Object.entries(destinosPorCategoria).map(([categoria, destinos]) => (
-                                    <CardEstadisticas 
-                                        key={categoria}
-                                        nombreCard={categoria}
-                                        cantNumero={1} 
-                                        promedio={45.67} 
-                                        destinos={destinos} 
-                                    />
-                                ))}
+                                {destinosPorCategoria && Object.keys(destinosPorCategoria).length > 0 ? (
+                                    Object.values(destinosPorCategoria).map(categoria => (
+                                        <CardEstadisticas 
+                                        key={categoria.idCategoria}
+                                        nombreCard={categoria.nombreCategoria}
+                                        cantNumero={categoria.destinos.length} 
+                                        promedio={45.67}
+                                        destinos={categoria.destinos}
+                                        />
+                                    ))
+                                ) : (
+                                <Typography variant='body1' sx={{color:'white', fontWeight:'bold'}}>No hay datos disponibles</Typography>
+                                )}
                            </Box>
                         </Box>
                     </Grid>

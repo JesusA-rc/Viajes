@@ -5,27 +5,31 @@ import CardDestinoNombre from '../../components/Cards/CardDestinoNombre';
 import GrupoFiltros from '../../components/GrupoFiltros';
 import { useGetEstadosByUsuarioId } from '../../../../lib/hooks/useEstadosDestino'; 
 import { FiltrosContext } from '../../contexts/FiltrosContext';
+import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
 
 const DestinosList = () => {
-    const usuarioId = parseInt(localStorage.getItem('userId'), 10);
 
+    const { currentUser, loadingUserInfo} = useUsuarios();
     
-    const { data: allDestinosUsuarios, isLoading } = useGetEstadosByUsuarioId(usuarioId);
+    const { data: allDestinosUsuarios, isLoading } = useGetEstadosByUsuarioId(
+        !loadingUserInfo && currentUser ? currentUser.id : null,
+    );
+    
     const { filtros } = useContext(FiltrosContext); 
 
-const destinosFiltrados = allDestinosUsuarios?.filter(destino => {
-    const estadoMatch = filtros.estado === 'All' || destino.estado === filtros.estado;
-    
-    const categoriaMatch = (filtros.Categorias === 'All' || filtros.Categorias == undefined) || 
-        destino.destino.categorias?.some(c => 
-            c.nombre === filtros.Categorias
-        );
-    
-    const busquedaMatch = !filtros.busqueda || 
-                        destino.destino.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase());
-    
-    return estadoMatch && categoriaMatch && busquedaMatch;
-});
+    const destinosFiltrados = allDestinosUsuarios?.filter(destino => {
+        const estadoMatch = filtros.estado === 'All' || destino.estado === filtros.estado;
+        
+        const categoriaMatch = (filtros.Categorias === 'All' || filtros.Categorias == undefined) || 
+            destino.destino.categorias?.some(c => 
+                c.nombre === filtros.Categorias
+            );
+        
+        const busquedaMatch = !filtros.busqueda || 
+                            destino.destino.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase());
+        
+        return estadoMatch && categoriaMatch && busquedaMatch;
+    });
     
     return (
         <Box sx={{ backgroundColor: '#222831', minHeight: '100vh' }}>

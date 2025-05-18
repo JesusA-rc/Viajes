@@ -1,6 +1,7 @@
 using Application.Services;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -14,6 +15,7 @@ public class DestinosController : BaseApiController
         _destinosServices = destinosServices;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<Destinos>>> GetDestinos()
     {

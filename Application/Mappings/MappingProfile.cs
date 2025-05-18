@@ -10,11 +10,6 @@ public class MappingProfile : Profile
     {
         CreateMap<Categorias, CategoriaDto>();
         CreateMap<Destinos, DestinoDto>();
-    
-
-        CreateMap<UsuarioDto, Usuario>()
-            .ForMember(dest => dest.ContrasenaHash, opt => opt.Ignore())
-            .ForMember(dest => dest.ContrasenaSalt, opt => opt.Ignore()); 
 
         CreateMap<Usuario, UsuarioDto>();
         CreateMap<Favoritos, FavoritosDto>().ReverseMap();
@@ -24,6 +19,16 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Destino, opt => opt.MapFrom(src => src.Destino));
 
         CreateMap<DestinoCategoria, DestinoCategoriaDTO>().ReverseMap();
+    
+
+        CreateMap<UsuarioDto, Usuario>()
+            .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()) 
+            .ForMember(dest => dest.SecurityStamp, opt => opt.Ignore()); 
+
+        CreateMap<Usuario, UsuarioDto>()
+            .ForMember(dest => dest.Password, opt => opt.Ignore()); //No pone el hash
+
+
 
     }
 }

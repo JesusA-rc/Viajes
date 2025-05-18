@@ -6,9 +6,27 @@ using Persistence;
 using FluentValidation;
 using Application.Validators;
 using API.Middleware;
+using Domain.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddControllers(opt =>
+{
+    //Politica de autenticacion
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().
+    Build();
+    //La aplica globalmente
+    opt.Filters.Add(new AuthorizeFilter(policy));
+
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -32,6 +50,26 @@ builder.Services.AddValidatorsFromAssemblyContaining<EstadosDestinoService>();
 builder.Services.AddValidatorsFromAssemblyContaining<DestinoCategoriaValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
 
+builder.Services.AddIdentityApiEndpoints<Usuario>(opt =>
+{
+    opt.User.RequireUniqueEmail = true;
+})
+.AddRoles<IdentityRole<int>>()
+.AddApiEndpoints()  // 👈 ¡Esta línea es crucial!
+.AddEntityFrameworkStores<ViajesContext>();
+
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+});
 
 var app = builder.Build();
 
@@ -46,12 +84,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+app.UseCors(x => x
+    .WithOrigins("http://localhost:5173", "https://localhost:5173")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+    .SetIsOriginAllowed(_ => true));
+
+
+app.UseAuthentication(); 
+app.UseAuthorization();  
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 
 app.MapControllers();
+app.MapGroup("api").MapIdentityApi<Usuario>();
 
 app.Run();

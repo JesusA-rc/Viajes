@@ -5,13 +5,18 @@ import styles from '../../../css/Grid2Column.module.css';
 import StatsSection from '../../components/Stats/StatsSection';
 import CrearActividad from '../../components/CrearActividad';
 import UserBanner from '../../components/UserBanner';
-import { useGetFavoritos } from '../../../../lib/hooks/useUsuarios';
+import { useGetFavoritos, useUsuarios } from '../../../../lib/hooks/useUsuarios';
 
 const Profile = () => {
-  const usuarioId = parseInt(localStorage.getItem('userId'), 10);
-
+  const { currentUser, loadingUserInfo} = useUsuarios();
   const { destinos, isPending } = useDestinos();
-  const { data: favoritos, isLoadingFavoritos, isErrorFavoritos } = useGetFavoritos(usuarioId);
+  const { data: favoritos, isLoadingFavoritos, isErrorFavoritos } = useGetFavoritos(
+    !loadingUserInfo && currentUser ? currentUser.id : null
+  );
+
+  if (loadingUserInfo || !currentUser) {
+    return <Typography>Cargando...</Typography>;
+  }
 
   if (isErrorFavoritos) {
     return <Typography color="error">Error al cargar los favoritos.</Typography>;
@@ -26,7 +31,7 @@ const Profile = () => {
   ];
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831', minHeight:'100vh' }}>
       <UserBanner />
 
       <Box sx={{ display: 'flex', width: '100%', padding: 10 }} className={styles.grid2}>

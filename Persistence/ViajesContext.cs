@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Persistence;
 
-public partial class ViajesContext : DbContext
+public partial class ViajesContext :  IdentityDbContext<Usuario, IdentityRole<int>, int>
 {
     public ViajesContext()
     {
@@ -19,16 +21,32 @@ public partial class ViajesContext : DbContext
 
     public virtual DbSet<Destinos> Destinos { get; set; }
 
-    public virtual DbSet<Usuario> Usuarios { get; set; }
-
     public virtual DbSet<Favoritos> Favoritos { get; set; }
 
     public DbSet<EstadoDestino> EstadoDestino { get; set; }
     
     public DbSet<DestinoCategoria> DestinoCategorias { get; set; }
+    
+    public virtual DbSet<Usuario> Usuarios { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Usuario>(b => b.ToTable("Usuarios"));
+        modelBuilder.Entity<IdentityUserClaim<int>>(b => b.ToTable("UsuarioClaims"));
+        modelBuilder.Entity<IdentityUserLogin<int>>(b => b.ToTable("UsuarioLogins"));
+        modelBuilder.Entity<IdentityUserToken<int>>(b => b.ToTable("UsuarioTokens"));
+        modelBuilder.Entity<IdentityRole<int>>(b => b.ToTable("Roles"));
+        modelBuilder.Entity<IdentityRoleClaim<int>>(b => b.ToTable("RoleClaims"));
+        modelBuilder.Entity<IdentityUserRole<int>>(b => b.ToTable("UsuarioRoles"));
+
+        modelBuilder.Entity<Usuario>(b =>
+        {
+            b.Property(u => u.FechaCreacion).HasDefaultValueSql("GETDATE()");
+            b.Property(e => e.Estado).HasDefaultValue(true);
+        });
+
         modelBuilder.Entity<Categorias>(entity =>
         {
             entity.HasKey(e => e.IdCategoria).HasName("PK__Categori__02AA07855F2A02A4");
@@ -65,19 +83,6 @@ public partial class ViajesContext : DbContext
                     });
         });
 
-
-        modelBuilder.Entity<Usuario>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_Usuarios");
-
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
-            entity.Property(e => e.Email).IsRequired().HasMaxLength(255).IsUnicode(false);
-            entity.Property(e => e.ContrasenaHash).IsRequired();
-            entity.Property(e => e.ContrasenaSalt).IsRequired();
-            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("GETDATE()");
-            entity.Property(e => e.Estado).HasDefaultValue(true);
-        });
-
         modelBuilder.Entity<Favoritos>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Favoritos");
@@ -99,7 +104,7 @@ public partial class ViajesContext : DbContext
             .HasOne(ed => ed.Usuario)
             .WithMany()
             .HasForeignKey(ed => ed.UsuarioId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<EstadoDestino>()
             .HasOne(ed => ed.Destino)
@@ -113,7 +118,7 @@ public partial class ViajesContext : DbContext
             .HasKey(dc => new { dc.ID_Destino, dc.ID_Categoria });
 
         modelBuilder.Entity<DestinoCategoria>()
-            .ToTable("Destino_Categoria"); 
+            .ToTable("Destino_Categoria");
 
         // Configuración de las relaciones de la tabla Destino_Categoria
         modelBuilder.Entity<DestinoCategoria>()

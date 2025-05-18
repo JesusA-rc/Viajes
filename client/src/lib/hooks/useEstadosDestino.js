@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import agent from '../api/agent';
+import { toast } from 'react-toastify';
 
 export function useEstadosDestino() {
   const queryClient = useQueryClient();
@@ -11,35 +12,48 @@ export function useEstadosDestino() {
       return response.data; 
     },
   });
-  
 
   const createEstado = useMutation({
     mutationFn: async (nuevoEstado) => {
-      const response = await agent.post('/EstadosDestino', nuevoEstado);
-      return response.data; 
+      await agent.post('/EstadosDestino', nuevoEstado);
+      return nuevoEstado;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['estadosDestino'] });
+      toast.success(`✅ ${data.title} guardado correctamente`);
     },
+    onError: (error) => {
+      console.error('Error al guardar estado:', error);
+      toast.error(`❌ Error al guardar el estado: ${error.message}`);
+    }
   });
 
   const updateEstado = useMutation({
-    mutationFn: async ({ id, estado }) => {
+    mutationFn: async ({ id, estado, title }) => {
       const response = await agent.put(`/EstadosDestino/${id}`, { estado });
-      return response.data;
+      return { data: response.data, estado, id, title };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['estadosDestino'] });
+            toast.success(`✅ "${data.title}" actualizado a: ${data.estado}`);
     },
+    onError: (error) => {
+      console.error('Error al actualizar estado:', error);
+      toast.error(`❌ Error al actualizar el estado: ${error.message}`);
+    }
   });
 
   const deleteEstado = useMutation({
     mutationFn: async (id) => {
       await agent.delete(`/EstadosDestino/${id}`);
+      toast.success(`✅ Destino eliminado correctamente.`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['estadosDestino'] });
     },
+    onError: () => {
+      toast.error(`❌ Ocurrio un error`);
+    }
   });
 
   return {

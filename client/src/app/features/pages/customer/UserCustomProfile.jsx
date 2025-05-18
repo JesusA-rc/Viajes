@@ -1,9 +1,17 @@
 import React from 'react'
 import { Box, Typography	 } from '@mui/material'; 
+import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
+
 
 const UserCustomProfile = () => {
       const backgroundImageUser = 'https://img.freepik.com/foto-gratis/fondo-galaxia-estilo-anime_23-2151133974.jpg';
       const profileUserImg = 'https://i.pinimg.com/736x/5a/62/ea/5a62ea77b66097b7ea1f5a35e749cf2a.jpg';
+      const {currentUser, loadingUserInfo} = useUsuarios();
+
+      if(loadingUserInfo){
+        <Typography>Cargando...</Typography>
+      }
+
   return (
     <Box
     sx={{
@@ -36,7 +44,7 @@ const UserCustomProfile = () => {
         }}
       />
       <Typography variant="h5" sx={{ color: 'white', fontWeight: 'bold' }}>
-        kyubimoon
+        {currentUser?.nombre}
       </Typography>
     </Box>
   </Box>

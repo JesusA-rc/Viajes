@@ -6,6 +6,8 @@ import AdminNavBar from "./features/pages/Admin/AdminNavBar";
 import SidebarDrawer from "./features/components/SidebarDrawer";
 import { FiltrosProvider} from "./features/contexts/FiltrosContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
@@ -50,6 +52,18 @@ function App() {
               <Outlet/>
             </Box>
           </Box>
+
+          <ToastContainer 
+            position="bottom-right"
+            autoClose={1500}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
         </FiltrosProvider>
       </QueryClientProvider>
 

@@ -5,26 +5,37 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using AutoMapper;
 using Application.Validators;
+using Microsoft.AspNetCore.Identity;
+using Application.DTOs.Usuario;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
 public class UsuariosServices
 {
-    private readonly ViajesContext _context;
+    private readonly UserManager<Usuario> _userManager;
     private readonly IMapper _mapper;
     private readonly UsuarioValidator _validator;
+    private readonly IConfiguration _config;
+    private readonly ViajesContext _context;
 
-    public UsuariosServices(ViajesContext context, IMapper mapper, UsuarioValidator validator)
+    public UsuariosServices(UserManager<Usuario> userManager, IMapper mapper, UsuarioValidator validator, IConfiguration config,
+        ViajesContext context)
     {
-        _context = context;
+        _userManager = userManager;
         _mapper = mapper;
         _validator = validator;
+        _config = config;
+        _context = context;
     }
-
     public async Task<Result<IEnumerable<UsuarioDto>>> GetAll()
     {
-        var usuarios = await _context.Usuarios.ToListAsync();
-        if (usuarios == null || usuarios.Count == 0)
+        var usuarios = _userManager.Users.ToList(); 
+        if (!usuarios.Any())
         {
             return Result<IEnumerable<UsuarioDto>>.Failure("No se encontraron usuarios", 404);
         }
@@ -32,9 +43,10 @@ public class UsuariosServices
         var usuariosDto = _mapper.Map<IEnumerable<UsuarioDto>>(usuarios);
         return Result<IEnumerable<UsuarioDto>>.Success(usuariosDto);
     }
+
     public async Task<Result<UsuarioDto>> GetById(int id)
     {
-        var usuario = await _context.Usuarios.FindAsync(id);
+        var usuario = await _userManager.FindByIdAsync(id.ToString());
         if (usuario == null)
         {
             return Result<UsuarioDto>.Failure("Usuario no encontrado", 404);
@@ -48,147 +60,159 @@ public class UsuariosServices
     {
         try
         {
-
-            var validationResult = await Task.FromResult(_validator.Validate(usuarioDto));
-            if (!validationResult.IsValid)
-            {
-                var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
-                return Result<UsuarioDto>.Failure($"Errores de validación: {errors}", 400);
-            }
-
             var usuario = _mapper.Map<Usuario>(usuarioDto);
 
-            var salt = GenerateSalt();
-            usuario.ContrasenaHash = HashPassword(usuarioDto.Contraseña, salt);
-            usuario.ContrasenaSalt = salt;
-            usuario.FechaCreacion = DateTime.Now;
+            //usuario.UserName = usuarioDto.Email; 
+            usuario.FechaCreacion = DateTime.UtcNow;
             usuario.Estado = true;
 
-
-            _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(usuario, usuarioDto.Password);
+            if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(e => e.Description);
+                    return Result<UsuarioDto>.Failure(errors,400);
+                }
 
             return Result<UsuarioDto>.Success(_mapper.Map<UsuarioDto>(usuario));
         }
         catch (Exception ex)
         {
-
             Console.WriteLine($"Error al crear el usuario: {ex.Message}");
-            Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-
             return Result<UsuarioDto>.Failure("Error interno del servidor: " + ex.Message, 500);
         }
     }
 
-    public async Task<Result<UsuarioDto>> UpdateUsuario(int id, Usuario usuario)
+    public async Task<Result<UsuarioDto>> UpdateUsuario(int id, UsuarioUpdateDTO usuarioUpdateDto)
     {
-        var usuarioToUpdate = await _context.Usuarios.FindAsync(id);
+        var usuarioToUpdate = await _userManager.FindByIdAsync(id.ToString());
         if (usuarioToUpdate == null)
         {
             return Result<UsuarioDto>.Failure("Usuario no encontrado", 404);
         }
 
-        var usuarioDto = _mapper.Map<UsuarioDto>(usuario);
-        var validationResult = await Task.FromResult(_validator.Validate(usuarioDto));
+        /*
+        var validationResult = await Task.FromResult(_validator.Validate(usuarioUpdateDto));
         if (!validationResult.IsValid)
         {
             var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
             return Result<UsuarioDto>.Failure($"Errores de validación: {errors}", 400);
         }
+        */
 
-        usuarioToUpdate.Nombre = usuario.Nombre;
-        usuarioToUpdate.Email = usuario.Email;
-        usuarioToUpdate.Estado = usuario.Estado;
+        usuarioToUpdate.Nombre = usuarioUpdateDto.Nombre;
+        usuarioToUpdate.Email = usuarioUpdateDto.Email;
+        usuarioToUpdate.UserName = usuarioUpdateDto.Email; 
+        usuarioToUpdate.Estado = usuarioUpdateDto.Estado;
 
-        await _context.SaveChangesAsync();
+        var result = await _userManager.UpdateAsync(usuarioToUpdate);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return Result<UsuarioDto>.Failure($"Error al actualizar: {errors}", 400);
+        }
 
         return Result<UsuarioDto>.Success(_mapper.Map<UsuarioDto>(usuarioToUpdate));
     }
 
     public async Task<Result<bool>> DeleteUsuario(int id)
     {
-        var usuarioToDelete = await _context.Usuarios.FindAsync(id);
+        var usuarioToDelete = await _userManager.FindByIdAsync(id.ToString());
         if (usuarioToDelete == null)
         {
             return Result<bool>.Failure("Usuario no encontrado", 404);
         }
 
-        _context.Usuarios.Remove(usuarioToDelete);
-        await _context.SaveChangesAsync();
+        var result = await _userManager.DeleteAsync(usuarioToDelete);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return Result<bool>.Failure($"Error al eliminar: {errors}", 400);
+        }
 
         return Result<bool>.Success(true);
     }
 
-    public async Task<Result<AuthResponseDto>> Login(string email, string password)
+    public async Task<Result<AuthResponseDTO>> Login(string email, string password)
     {
         try
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
-
+            var usuario = await _userManager.FindByEmailAsync(email);
             if (usuario == null)
             {
-                return Result<AuthResponseDto>.Failure("Correo electrónico o contraseña incorrectos", 401);
+                return Result<AuthResponseDTO>.Failure("Credenciales inválidas", 401);
             }
 
-            var hashedPassword = HashPassword(password, usuario.ContrasenaSalt);
-            if (!hashedPassword.SequenceEqual(usuario.ContrasenaHash))
+            var isValidPassword = await _userManager.CheckPasswordAsync(usuario, password);
+            if (!isValidPassword)
             {
-                return Result<AuthResponseDto>.Failure("Correo electrónico o contraseña incorrectos", 401);
+                return Result<AuthResponseDTO>.Failure("Credenciales inválidas", 401);
             }
 
-            var authResponse = new AuthResponseDto
+            var token = GenerateJwtToken(usuario);
+
+            var authResponse = new AuthResponseDTO
             {
                 IsAuthenticated = true,
-                UserId = usuario.Id, 
-                Email = usuario.Email 
+                UserId = Convert.ToInt32(usuario.Id),
+                Email = usuario.Email,
+                Token = token 
             };
 
-            return Result<AuthResponseDto>.Success(authResponse);
+            return Result<AuthResponseDTO>.Success(authResponse);
         }
         catch (Exception ex)
         {
-            return Result<AuthResponseDto>.Failure($"Error inesperado: {ex.Message}", 500);
+            return Result<AuthResponseDTO>.Failure($"Error inesperado: {ex.Message}", 500);
         }
     }
 
-    private static byte[] GenerateSalt()
-    {
-        var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
-        var salt = new byte[16];
-        rng.GetBytes(salt);
-        return salt;
-    }
 
-    private static byte[] HashPassword(string password, byte[] salt)
+    
+    
+    private string GenerateJwtToken(Usuario usuario)
     {
-        using (var hmac = new System.Security.Cryptography.HMACSHA512(salt))
+        var claims = new[]
         {
-            return hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        }
+            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+            new Claim(ClaimTypes.Email, usuario.Email)
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.Now.AddHours(2),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public async Task<Result<IEnumerable<DestinoDto>>> GetFavoritosByUsuarioId(int usuarioId)
+    public async Task<Result<IEnumerable<DestinoDto>>> GetFavoritosByUsuarioId(int
+    usuarioId)
     {
         try
         {
-
-            var usuario = await _context.Usuarios.FindAsync(usuarioId);
+            var usuario = await _userManager.FindByIdAsync(usuarioId.ToString());
             if (usuario == null)
             {
                 return Result<IEnumerable<DestinoDto>>.Failure("Usuario no encontrado", 404);
             }
 
-            var favoritos = await _context.Favoritos
+            var destinosFavoritos = await _context.Favoritos
                 .Where(f => f.UsuarioId == usuarioId)
-                .Select(f => f.Destino) 
+                .Select(f => f.Destino)
                 .ToListAsync();
 
-            if (favoritos == null || favoritos.Count == 0)
+            if (destinosFavoritos == null || destinosFavoritos.Count == 0)
             {
                 return Result<IEnumerable<DestinoDto>>.Failure("El usuario no tiene destinos favoritos", 404);
             }
 
-            var destinosDto = _mapper.Map<IEnumerable<DestinoDto>>(favoritos);
+            var destinosDto = _mapper.Map<IEnumerable<DestinoDto>>(destinosFavoritos);
 
             return Result<IEnumerable<DestinoDto>>.Success(destinosDto);
         }

@@ -16,7 +16,7 @@ import TypographyNavBar from './features/components/TypographyNavBar';
 import { useNavigate } from 'react-router-dom'; 
 
 const pages = ['Destinos', 'Explora', 'Experiencias'];
-const settings = ['Profile', 'login' ,'Account', 'Dashboard', 'register' ,'Logout'];
+const settings = ['Profile', 'login','register'];
 const NavBar = () => {
 
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -36,6 +36,10 @@ const NavBar = () => {
   
     const handleCloseUserMenu = (setting) => {
       setAnchorElUser(null);
+
+      if(setting == 'Profile'){
+        navigate('/clientes/profile');
+      }
   
       if (setting === 'register') {
         navigate('/clientes/register'); 

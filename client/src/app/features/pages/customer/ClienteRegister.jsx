@@ -3,26 +3,30 @@ import { Box, Typography, TextField, Button } from '@mui/material';
 import styles from '../../../css/Grid2Column.module.css';
 import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
 import { useForm } from 'react-hook-form';
+import TextInput from '../../components/TextInput';
 
 const ClienteRegister = () => {
   const { createUsuario } = useUsuarios();
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors }, 
-  } = useForm();
+  const { control , handleSubmit, setError, formState: {isValid, isSubmitting} } = useForm();
 
   const onSubmit = async (data) => {
-    console.log('Datos enviados:', data); 
-    try {
-      await createUsuario.mutateAsync(data);
-      alert('Usuario creado correctamente');
-      reset();
-    } catch (error) {
-      console.error('Error al crear el usuario:', error);
-      alert('Ocurrió un error al crear el usuario');
-    }
+        await createUsuario.mutateAsync(data, {
+        onError: (error) => {
+        const errors = error.response?.data;
+
+          if (Array.isArray(errors)) {
+            errors.forEach(err => {
+              if (err.includes("Correo")) {
+                setError("email", { message: err });
+              } else if (err.includes("contraseña") || err.includes("Password")) {
+                setError("password", { message: err });
+              } else if (err.includes("Nombre")) {
+                setError("nombre", { message: err });
+              }
+            });
+          }
+        }
+        });
   };
 
   return (
@@ -45,35 +49,13 @@ const ClienteRegister = () => {
           Empiece ahora
         </Typography>
 
-        <NameCamp
-          nameCamp="Nombre"
-          register={register}
-          required="El nombre es obligatorio"
-          error={errors.nombre?.message} 
-        />
-        <NameCamp
-          nameCamp="Email"
-          register={register}
-          required="El Email es obligatorio"
-          pattern={{
-            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            message: 'Ingrese un Email válido',
-          }}
-          error={errors.correo?.message}
-        />
-        <NameCamp
-          nameCamp="Contraseña"
-          register={register}
-          required="La contraseña es obligatoria"
-          minLength={{
-            value: 6,
-            message: 'La contraseña debe tener al menos 6 caracteres',
-          }}
-          error={errors.contraseña?.message}
-        />
+
+        <TextInput label='Nombre' control={control} name='nombre'/>
+        <TextInput label='Email' control={control} name='email'/>
+        <TextInput label='Password' type='password' control={control} name='password'/>
 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 5 }}>
-          <Button type="submit" variant="contained" sx={{ width: '50%' }}>
+          <Button type="submit" variant="contained" sx={{ width: '50%' }} disabled={!isValid || isSubmitting}>
             Registrarse
           </Button>
         </Box>

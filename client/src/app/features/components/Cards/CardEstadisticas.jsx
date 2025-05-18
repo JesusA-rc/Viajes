@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import styles from '../../../css/Card_content_color.module.css';
 
 const CardEstadisticas = ({ nombreCard, cantNumero, promedio, destinos }) => {
+
     const [currentIndex, setCurrentIndex] = useState(0);
     
     const destinosConImagen = destinos?.filter(destino => destino.imagen) || [];
     
-    const totalGroups = Math.ceil(destinosConImagen.length / 4);
+    const totalGroups = Math.ceil(destinosConImagen.length / 2);
 
-    const currentImages = destinosConImagen.slice(currentIndex * 4, (currentIndex + 1) * 4);
+    const currentImages = destinosConImagen.slice(currentIndex * 2, (currentIndex + 1) * 2);
     
     const handleNext = () => {
         setCurrentIndex((prev) => (prev + 1) % totalGroups);
@@ -116,6 +117,8 @@ const CardEstadisticas = ({ nombreCard, cantNumero, promedio, destinos }) => {
                                         }
                                     }}
                                 />
+
+
                             </Box>
                         ))}
                     </Box>

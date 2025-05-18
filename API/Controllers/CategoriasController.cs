@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
@@ -14,6 +15,8 @@ public class CategoriasController : BaseApiController
         _categoriasServices = categoriasServices;
     }
 
+
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetCategorias()
     {

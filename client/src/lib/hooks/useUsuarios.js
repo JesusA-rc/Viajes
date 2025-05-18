@@ -1,9 +1,23 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 import agent from '../api/agent'
 
 export const useUsuarios = () => {
 
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
+
+    const loginUsuario = useMutation({
+        mutationFn: async (creds) => {
+            await agent.post('/login?useCookies=true', creds);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['usuarios']
+            });
+        }
+    });
 
     const {data: usuarios, isPending} = useQuery({
         queryKey: ['usuarios'],
@@ -13,14 +27,42 @@ export const useUsuarios = () => {
         }
     });
 
-    const createUsuario =  useMutation({
-        mutationFn: async (nuevoUsuario) =>{
-            await agent.post('/usuarios', nuevoUsuario);
+    const createUsuario = useMutation({
+        mutationFn: async (nuevoUsuario) => {
+            await agent.post('/account/register', nuevoUsuario);
         },
-        onSuccess: async () =>{
-            await queryClient.invalidateQueries({ queryKey: ['usuarios'] });
+        onSuccess: () => {
+            toast.success('Registro exitoso - ahora puedes iniciar sesión');
+            navigate('/clientes/login');
         },
+        onError: (error) => {
+            const errors = error.response?.data;
+            toast.error('Hubo un error al registrarte');
+            return errors.data;
+        }
     });
+
+    const {data: currentUser, isLoading: loadingUserInfo} = useQuery({
+        queryKey: ['usuariose'],
+        queryFn: async () => {
+            const response = await agent.get('/account/user-info');
+            return response.data;
+        },
+        enabled: !queryClient.getQueryData(['usuarios']) && 
+        location.pathname !== 'login' &&
+        location.pathname !== '/register'
+    });
+
+    const logoutUser = useMutation({
+        mutationFn: async () =>{
+            await agent.post('/account/logout');
+        },
+        onSuccess: () =>{
+            queryClient.removeQueries({queryKey: ['usuarios']});
+            navigate('/company');
+        }
+    });
+
 
     const updateUsuario = useMutation({
         mutationFn: async (actualizarUsuario) =>{
@@ -40,22 +82,8 @@ export const useUsuarios = () => {
         },
     });
 
-    const loginUsuario = useMutation({
-        mutationFn: async (credenciales) => {
-          const response = await agent.post('/usuarios/login', credenciales);
-          return response.data;
-        },
-        onSuccess: (data) => {
-          if (data.isAuthenticated) {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('userId', data.userId);
-            console.log('Datos del login:', data);
-          }
-        },
-        onError: (error) => {
-          console.error('Error al iniciar sesión:', error);
-        },
-    });
+
+
 
     return{
         usuarios,
@@ -63,7 +91,10 @@ export const useUsuarios = () => {
         createUsuario,
         deleteUsuario,
         updateUsuario,
-        loginUsuario
+        loginUsuario,
+        currentUser,
+        loadingUserInfo,   
+        logoutUser
     }
 
 }

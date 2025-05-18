@@ -32,7 +32,7 @@ const FilterDropdowns = ({ filters, selectedFilters, onFilterChange, fDirection 
                             },
                         }}
                         sx={{
-                            width: '200px',
+                            width: '100%',
                             color: 'white',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',

@@ -1,8 +1,17 @@
 import React from 'react'
 import { Box, Typography } from '@mui/material';
 
-const CardDestinoNombre = ({itemCard}) => {
+const CardDestinoNombre = ({itemCard=[]}) => {
 
+   if (!itemCard || itemCard.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Typography variant="body1" sx={{color:'white', fontWeight:'bold'}}>
+          No hay destinos para mostrar
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, width:'100%', alignItems:'center', justifyContent:'center'}}>

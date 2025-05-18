@@ -13,11 +13,6 @@ export const FiltrosProvider = ({ children }) => {
     
   const dropdownFilters = [
     {
-      name: 'format',
-      label: 'Format',
-      options: ['All', 'Experiencias', 'Parques', 'Museos', 'Zoológicos', 'Ciudades Historicas', 'Playas tropicales', 'Acuarios'],
-    },
-    {
       name: 'Categorias',
       label: 'Categorias',
       options: opcionesCategorias,

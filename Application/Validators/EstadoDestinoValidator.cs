@@ -14,9 +14,6 @@ public class EstadoDestinoValidator : AbstractValidator<EstadosDestinoDTO>
     {
         _context = context;
 
-        RuleFor(ed => ed.UsuarioId)
-            .GreaterThan(0).WithMessage("El ID del usuario debe ser mayor que cero.");
-
         RuleFor(ed => ed.DestinoId)
             .GreaterThan(0).WithMessage("El ID del destino debe ser mayor que cero.");
 
@@ -48,7 +45,7 @@ public class EstadoDestinoValidator : AbstractValidator<EstadosDestinoDTO>
 
     private bool BeAValidEstado(string estado)
     {
-        var estadosPermitidos = new[] { "Visitados", "Planeados", "No volveria a ir" };
+        var estadosPermitidos = new[] { "Visitados", "Planeados", "No volvería a ir" };
         return estadosPermitidos.Contains(estado);
     }
 }

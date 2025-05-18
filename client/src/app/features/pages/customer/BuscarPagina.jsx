@@ -7,13 +7,27 @@ import { useDestinos } from '../../../../lib/hooks/useDestinos';
 import { FiltrosContext } from '../../contexts/FiltrosContext';
 import FilterDropdowns from '../../components/Stats/FilterDropdowns';
 import { useGetEstadosByUsuarioId } from '../../../../lib/hooks/useEstadosDestino';
+import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
 
 const BuscarPagina = () => {
-  const usuarioId = parseInt(localStorage.getItem('userId'), 10);
+  const { currentUser, loadingUserInfo } = useUsuarios();
+  const { data: estadosUsuario, isLoading: isLoadingEstados } = useGetEstadosByUsuarioId(
+    !loadingUserInfo && currentUser ? currentUser.id : null
+  );
 
   const { destinosConCategorias, isPendingConCategorias } = useDestinos();
 
-  const { data: estadosUsuario, isLoading: isLoadingEstados } = useGetEstadosByUsuarioId(usuarioId);
+  const { filtros, dropdownFilters, setFiltros } = useContext(FiltrosContext);
+
+  const handleDropdownFilterChange = useCallback((filterName, value) => {
+    setFiltros(prev => ({ ...prev, [filterName]: value }));
+  }, [setFiltros]);
+
+  if (loadingUserInfo || !currentUser) {
+    return <Typography>Cargando...</Typography>;
+  }
+
+
 
   const destinosCombinados = destinosConCategorias?.map(destino => {
     const estadoUsuario = estadosUsuario?.find(e => e.destinoId === destino.idDestino);
@@ -23,7 +37,7 @@ const BuscarPagina = () => {
       };
   });
 
-  const { filtros, dropdownFilters, setFiltros } = useContext(FiltrosContext);
+
 
   const destinosFiltrados = destinosCombinados?.filter(destino => {
     const coincideTexto = !filtros.busqueda || 
@@ -38,9 +52,7 @@ const BuscarPagina = () => {
     return coincideTexto && coincideCategoria;
   });
 
-  const handleDropdownFilterChange = useCallback((filterName, value) => {
-    setFiltros(prev => ({ ...prev, [filterName]: value }));
-  }, [setFiltros]);
+  console.log(destinosFiltrados);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831', minHeight:'100vh' }}>
@@ -79,7 +91,7 @@ const BuscarPagina = () => {
                 title={d.nombre}
                 destinoId = {d.idDestino}
                 estadoUsuario={d.estadoUsuario}
-                usuarioId = {usuarioId}
+                usuarioId = {currentUser.id}
               />
             ))
           ) : (

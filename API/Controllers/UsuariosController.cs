@@ -3,17 +3,19 @@ using Application.DTOs;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity.Data;
+using Application.DTOs.Usuario;
 
 namespace API.Controllers;
 
 public class UsuariosController : BaseApiController
 {
     private readonly UsuariosServices _usuariosServices;
+    private readonly ILogger<UsuariosController> _logger;
 
-    public UsuariosController(UsuariosServices usuariosServices)
+    public UsuariosController(UsuariosServices usuariosServices, ILogger<UsuariosController> logger)
     {
         _usuariosServices = usuariosServices;
+        _logger = logger; 
     }
 
     [HttpGet]
@@ -49,17 +51,24 @@ public class UsuariosController : BaseApiController
         }
     }
 
+    
+
     [HttpPut("{id}")]
-    public async Task<ActionResult> EditUsuario(int id, Usuario usuario)
+    public async Task<ActionResult> EditUsuario(int id, [FromBody] UsuarioUpdateDTO usuarioUpdateDto)
     {
         try
         {
-            var result = await _usuariosServices.UpdateUsuario(id, usuario);
+            var result = await _usuariosServices.UpdateUsuario(id, usuarioUpdateDto); 
             return HandleResult(result);
         }
         catch (ValidationException ex)
         {
             return BadRequest(ex.Errors); 
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al actualizar usuario con ID {UsuarioId}", id);
+            return StatusCode(500, "Error interno del servidor");
         }
     }
 

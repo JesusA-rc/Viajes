@@ -1,28 +1,40 @@
 using FluentValidation;
 using Application.DTOs;
-using Persistence;
-using Microsoft.EntityFrameworkCore;
+using Domain.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Validators;
 
 public class UsuarioValidator : AbstractValidator<UsuarioDto>
 {
-    private readonly ViajesContext _context;
-    public UsuarioValidator(ViajesContext context)
-    {
-        _context = context;
+    private readonly UserManager<Usuario> _userManager;
 
-        RuleFor(u => u.Nombre).NotEmpty().WithMessage("El nombre es obligatorio");
-        RuleFor(u => u.Email).NotEmpty().EmailAddress().WithMessage("El email debe ser válido");
-        RuleFor(u => u.Estado).NotNull().WithMessage("El estado es obligatorio");
-        RuleFor(ed => ed.Id)
-            .GreaterThan(0).WithMessage("El ID del usuario debe ser mayor que cero.")
-            .WithMessage((dto, Id) => $"El destino con ID {Id} no existe");
+    public UsuarioValidator(UserManager<Usuario> userManager)
+    {
+        _userManager = userManager;
+
+        RuleFor(u => u.Nombre)
+            .NotEmpty().WithMessage("El nombre es obligatorio")
+            .MaximumLength(100).WithMessage("El nombre no puede exceder 100 caracteres");
+
+        RuleFor(u => u.Password) 
+            .NotEmpty().When(u => u.Id == 0)
+            .MinimumLength(8).WithMessage("La contraseña debe tener al menos 8 caracteres")
+            .Matches("[A-Z]").WithMessage("La contraseña debe contener al menos una mayúscula")
+            .Matches("[a-z]").WithMessage("La contraseña debe contener al menos una minúscula")
+            .Matches("[0-9]").WithMessage("La contraseña debe contener al menos un número");
+
     }
 
-    public async Task<bool> UsuarioExist(int usuarioId, CancellationToken cancellationToken)
+    private async Task<bool> EmailUnico(string email, CancellationToken ct)
     {
-        return await _context.Usuarios
-            .AnyAsync(u => u.Id == usuarioId, cancellationToken);
+        var usuario = await _userManager.FindByEmailAsync(email);
+        return usuario == null; 
+    }
+
+    public async Task<bool> UsuarioExist(int id, CancellationToken ct)
+    {
+        var usuario = await _userManager.FindByIdAsync(id.ToString());
+        return usuario != null;
     }
 }

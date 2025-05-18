@@ -1,36 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  IconButton,
-  Tooltip,
-  Modal,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Slider
+import { Box, Typography, IconButton, Tooltip, Modal,TextField,Select,MenuItem,FormControl,InputLabel,Button,
+Slider
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useEstadosDestino } from '../../../../lib/hooks/useEstadosDestino' 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [estado, setEstado] = useState('');
   const [calificacion, setCalificacion] = useState(5);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   const estados = ['Visitados', 'Planeados', 'No volvería a ir'];
-  const { updateEstado } = useEstadosDestino();
+  const { updateEstado, deleteEstado } = useEstadosDestino();
   const { createEstado } = useEstadosDestino();
 
   useEffect(() => {
     if (estadoUsuario) {
-      setEstado(estadoUsuario.estado || 'Planeados');
+      setEstado(estadoUsuario.estado);
       setCalificacion(estadoUsuario.calificacion || 5);
-    }
+    }else
+      setEstado('');
   }, [estadoUsuario, openModal]);
 
   const handleOpenModal = () => {
@@ -43,10 +40,9 @@ const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
 
   const handleSubmit = () => {
     if (estadoUsuario && estadoUsuario.id) {
-        updateEstado.mutate({ id: estadoUsuario.id, estado });
-        console.log("Actualizo correctamente.");
-    }else{
-      createEstado.mutate({ UsuarioId: usuarioId, DestinoId: destinoId, Estado: estado});
+      updateEstado.mutate({ id: estadoUsuario.id, estado, title: title });
+    } else {
+      createEstado.mutate({ UsuarioId: usuarioId, DestinoId: destinoId, Estado: estado, title: title });
     }
 
     handleCloseModal();
@@ -164,12 +160,56 @@ const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
             <Button onClick={handleCloseModal} variant="outlined">
               Cancelar
             </Button>
-            <Button onClick={handleSubmit} variant="contained" color="primary">
+            <Button onClick={handleSubmit} variant="contained" color="primary" disabled={estado==''}>
               Guardar
             </Button>
+           {estadoUsuario && (
+            <Button
+              onClick={() => setOpenConfirmDialog(true)}
+              variant="contained"
+              color="error"
+            >
+              Eliminar
+            </Button>
+          )}
           </Box>
+
         </Box>
       </Modal>
+
+
+      <Dialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"¿Estás seguro de eliminar este estado?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Esta acción no se puede deshacer. El destino será eliminado de tu lista.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirmDialog(false)} color="primary">
+            Cancelar
+          </Button>
+          <Button
+            onClick={() => {
+              deleteEstado.mutate(estadoUsuario.id);
+              handleCloseModal();
+              setOpenConfirmDialog(false);
+            }}
+            color="error"
+            variant="contained"
+            autoFocus
+          >
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
 
     </Box>

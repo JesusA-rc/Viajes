@@ -18,6 +18,7 @@ import Estadisticas from '../features/pages/customer/Estadisiticas.jsx'
 import BuscarPagina from '../features/pages/customer/BuscarPagina.jsx'
 import AdminVer from '../features/pages/Admin/AdminVer.jsx'
 import AdminCrear from '../features/pages/AdminCrear.jsx'
+import RequiereAuth from './RequiereAuth.jsx'
 
 export const router = createBrowserRouter([
     {
@@ -35,19 +36,14 @@ export const router = createBrowserRouter([
             {path: 'company', element: <ClienteLanding/>},
             {path: 'clientes/register', element: <ClienteRegister/>},
             {path: 'clientes/login', element: <ClienteLogin/>},
-            {
-                path: 'clientes/profile',
-                element: (
-                    <ProtectedRoute>
-                        <Profile />
-                    </ProtectedRoute>
-                ),
-            },
-            {path: '/clientes/destinos-list', element: <DestinosList/>},
-            {path: '/clientes/estadisticas', element: <Estadisticas/>},
-            {path: '/clientes/buscar/destinos' , element: <BuscarPagina/>},
             {path: '/adminDestinos/ver', element: <AdminVer/>},
-            {path: '/adminDestinos/crear', element:<AdminCrear/>}
+            {path: '/adminDestinos/crear', element:<AdminCrear/>},
+            {element: <RequiereAuth/>, children: [
+                {path: '/clientes/destinos-list', element: <DestinosList/>},
+                {path: '/clientes/estadisticas', element: <Estadisticas/>},
+                {path: '/clientes/buscar/destinos' , element: <BuscarPagina/>},
+                {path: 'clientes/profile', element:  <Profile />}
+            ]},
         ]
     }
 ])
