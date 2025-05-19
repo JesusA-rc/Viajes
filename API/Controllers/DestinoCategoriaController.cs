@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
+[AllowAnonymous]
 public class DestinoCategoriaController : BaseApiController
 {
     private readonly DestinoCategoriaService _destinoCategoriaService;
@@ -21,7 +23,8 @@ public class DestinoCategoriaController : BaseApiController
     }
 
     [HttpGet("destino/{idDestino}")]
-    public async Task<IActionResult> GetAllCategoriasByDestino(int idDestino){
+    public async Task<IActionResult> GetAllCategoriasByDestino(int idDestino)
+    {
         var result = await _destinoCategoriaService.GetAllByDestino(idDestino);
         return HandleResult(result);
     }

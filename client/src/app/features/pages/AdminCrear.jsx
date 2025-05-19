@@ -3,6 +3,8 @@ import { Box, Select, MenuItem, FormControl, Typography } from '@mui/material';
 import { useDestinoCategoria } from '../../../lib/hooks/useDestinoCategoria';
 import CrearRelacionForm from './Admin/Crear/CrearRelacionForm';
 import CrearCategoriaForm from './Admin/Crear/CrearCategoriaForm';
+import CrearDestinoForm from './Admin/Crear/CrearDestinoForm';
+import { toast } from "react-toastify";
 
 const AdminCrear = () => {
   const [selectedOption, setSelectedOption] = useState('Destinos');
@@ -18,8 +20,9 @@ const AdminCrear = () => {
         iD_Destino: Number(data.iD_Destino),
         iD_Categoria: Number(data.iD_Categoria)
       });
+      toast.success("Se ha creado la relacion correctamente.");
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -44,7 +47,7 @@ const AdminCrear = () => {
       )}
 
       {selectedOption === 'Destinos' && (
-        <Typography>Formulario para crear destinos aquí</Typography>
+        <CrearDestinoForm/>
       )}
 
       {selectedOption === 'Categorias' && <CrearCategoriaForm />}

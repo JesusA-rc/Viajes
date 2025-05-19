@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[AllowAnonymous]
 public class DestinosController : BaseApiController
 {
     private readonly DestinosServices _destinosServices;
@@ -34,7 +35,7 @@ public class DestinosController : BaseApiController
     public async Task<ActionResult<Destinos>> GetDestino(int id)
     {
         var result = await _destinosServices.GetById(id);
-        return HandleResult(result); 
+        return HandleResult(result);
     }
 
     [HttpPut("{id}")]
@@ -47,7 +48,7 @@ public class DestinosController : BaseApiController
         }
         catch (ValidationException ex)
         {
-            return BadRequest(ex.Errors); 
+            return BadRequest(ex.Errors);
         }
     }
 
@@ -61,7 +62,7 @@ public class DestinosController : BaseApiController
         }
         catch (ValidationException ex)
         {
-            return BadRequest(ex.Errors); 
+            return BadRequest(ex.Errors);
         }
     }
 

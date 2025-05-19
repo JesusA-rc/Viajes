@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
-
+[AllowAnonymous]
 public class CategoriasController : BaseApiController
 {
     private readonly CategoriasServices _categoriasServices;

@@ -3,6 +3,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useCategorias } from '../../../../../lib/hooks/useCategorias'
 import TextInput from '../../../components/TextInput';
+import { toast } from "react-toastify";
 
 const CrearCategoriaForm = () => {
   const { createCategoria } = useCategorias();
@@ -16,9 +17,10 @@ const CrearCategoriaForm = () => {
   const onSubmit = async (data) => {
     try {
       await createCategoria.mutateAsync(data);
+      toast.success("Categoria creada correctamente.");
       reset();
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      toast.error(`Error: ${error.message}`);
     }
   };
 

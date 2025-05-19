@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
+import { toast } from 'react-toastify';
 import agent from '../api/agent'
 
 export const useDestinos = () => {
@@ -20,13 +21,29 @@ export const useDestinos = () => {
         }
     });
 
-    const createDestino =  useMutation({
-        mutationFn: async (nuevoDestino) =>{
-            await agent.post('/destinos', nuevoDestino);
+    const createDestino = useMutation({
+        mutationFn: async (nuevoDestino) => {
+            try {
+                const response = await agent.post('/destinos', nuevoDestino);
+                return response.data;
+            } catch (error) {
+                const errorMessage = error.response?.data?.error || 
+                                error.response?.data?.error.join('\n') || 
+                                error.message;
+                
+                if (Array.isArray(errorMessage)) {
+                    throw new Error(errorMessage.join('\n'));
+                }
+                throw new Error(errorMessage);
+            }
         },
-        onSuccess: async () =>{
+        onSuccess: async () => {
+            toast.success("Destino agregado correctamente");
             await queryClient.invalidateQueries({ queryKey: ['destinos'] });
         },
+        onError: (error) => {
+            toast.error(error.message);
+        }
     });
 
     const updateDestino = useMutation({
