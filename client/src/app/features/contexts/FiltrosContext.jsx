@@ -16,12 +16,7 @@ export const FiltrosProvider = ({ children }) => {
       name: 'Categorias',
       label: 'Categorias',
       options: opcionesCategorias,
-    },
-    {
-      name: 'country',
-      label: 'Country',
-      options: ['All', 'México', 'Estados Unidos', 'Canadá', 'Japón'],
-    },
+    }
   ];
 
   const listFilters = ['All', 'Visitados', 'Planeados', 'No volvería a ir'];

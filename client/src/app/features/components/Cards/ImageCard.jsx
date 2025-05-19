@@ -11,7 +11,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useFavoritosUsuario } from '../../../../lib/hooks/useFavoritosUsuario';
-
+import { useNavigate } from 'react-router';
+import FavoritoButton from '../buttons/FavoritoButton';
 
 
 const ImageCard = ({estadoUsuario, usuarioId, destino}) => {
@@ -22,6 +23,7 @@ const ImageCard = ({estadoUsuario, usuarioId, destino}) => {
   const [calificacion, setCalificacion] = useState(5);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const { isFavorito, addFavorito, removeFavorito } = useFavoritosUsuario(usuarioId);
+  const navigate = useNavigate();
 
   const estados = ['Visitados', 'Planeados', 'No volvería a ir'];
   const { updateEstado, deleteEstado } = useEstadosDestino();
@@ -53,6 +55,10 @@ const ImageCard = ({estadoUsuario, usuarioId, destino}) => {
 
     handleCloseModal();
   };
+
+  const handleNavigateDestinos = (idDestino) =>{
+    navigate(`/clientes/destinos/${idDestino}`);
+  }
 
   const handleToggleFavorito = async () => {
     try {
@@ -89,6 +95,7 @@ const ImageCard = ({estadoUsuario, usuarioId, destino}) => {
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+
       >
         <Box
           component="img"
@@ -100,6 +107,7 @@ const ImageCard = ({estadoUsuario, usuarioId, destino}) => {
           }}
           alt={destino.nombre}
           src={destino.imagen}
+          onClick={() =>handleNavigateDestinos(destino.idDestino)}
         />
 
         {isHovered && (
@@ -158,23 +166,15 @@ const ImageCard = ({estadoUsuario, usuarioId, destino}) => {
                 }}
               />
               <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                Editar { destino.nombre}
+                { destino.nombre}
               </Typography>
             </Box>
 
             <Box sx={{display:'flex', alignItems:'center', gap:2}}>
-              <IconButton 
-                onClick={handleToggleFavorito}
-                aria-label="favorite"
-                sx={{
-                  color: isFavorito(destino.idDestino) ? 'red' : 'white',
-                  '&:hover': {
-                    color: isFavorito(destino.idDestino) ? 'darkred' : 'lightgray'
-                  }
-                }}
-              >
-                <FavoriteIcon />
-              </IconButton>
+                  <FavoritoButton
+                      isFavorito={isFavorito(destino.idDestino)}
+                      onToggle={handleToggleFavorito}
+                  />
               <Button onClick={handleSubmit} variant="contained" color="primary" disabled={estado==''}>
                 Guardar
               </Button>

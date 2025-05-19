@@ -55,7 +55,7 @@ const BuscarPagina = () => {
   console.log(destinosFiltrados);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831', minHeight:'100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831'}}>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, padding: 3 }}>
         <Box sx={{display: 'flex', alignItems:'center', justifyContent:'center', flexWrap: 'wrap'}}>

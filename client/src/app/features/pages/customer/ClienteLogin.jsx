@@ -1,7 +1,8 @@
 import React from 'react';
 import { Box, Typography, TextField, Button, Grid, Paper } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
+import { useProfile } from '../../../../lib/hooks/useProfile';
+
 import { useNavigate} from "react-router-dom";
 import { loginSchema } from '../../../../lib/schemas/loginSchema';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +13,8 @@ const ClienteLogin = () => {
     const navigate = useNavigate();
     const backgroundImage = 'https://img.pikbest.com/backgrounds/20190423/painted-travel-background-for-travel-agency_1808534.jpg!bw700';
   
-    const { loginUsuario,} = useUsuarios();
+    const { loginUsuario} = useProfile();
+
 
     const { control, handleSubmit, formState: {isValid, isSubmitting} } = useForm({
         mode: 'onTouched',

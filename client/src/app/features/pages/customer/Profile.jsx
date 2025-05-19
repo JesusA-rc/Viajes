@@ -4,7 +4,6 @@ import MediaSection from '../../components/MediaSection';
 import styles from '../../../css/Grid2Column.module.css';
 import StatsSection from '../../components/Stats/StatsSection';
 import CrearActividad from '../../components/CrearActividad';
-
 import { useProfile } from '../../../../lib/hooks/useProfile';
 import { useFavoritosUsuario } from '../../../../lib/hooks/useFavoritosUsuario';
 
@@ -15,8 +14,6 @@ const Profile = () => {
   const { favoritos, isLoadingFavoritos} = useFavoritosUsuario(
     !loadingUserInfo && currentUser ? currentUser.id : null
   );
-
-
 
   if (loadingUserInfo || !currentUser) {
     return <Typography>Cargando...</Typography>;

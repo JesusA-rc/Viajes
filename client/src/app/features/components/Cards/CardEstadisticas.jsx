@@ -2,14 +2,17 @@ import { Box, Typography, IconButton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import React, { useState } from 'react';
 import styles from '../../../css/Card_content_color.module.css';
+import { useNavigate } from 'react-router';
 
 const CardEstadisticas = ({ nombreCard, cantNumero, promedio, destinos }) => {
+
+    const navigate = useNavigate();
 
     const [currentIndex, setCurrentIndex] = useState(0);
     
     const destinosConImagen = destinos?.filter(destino => destino.imagen) || [];
     
-    const totalGroups = Math.ceil(destinosConImagen.length / 2);
+    const totalGroups = Math.ceil(destinosConImagen.length / 2); //Cuantos grupos se pueden formar
 
     const currentImages = destinosConImagen.slice(currentIndex * 2, (currentIndex + 1) * 2);
     
@@ -20,6 +23,10 @@ const CardEstadisticas = ({ nombreCard, cantNumero, promedio, destinos }) => {
     const handlePrev = () => {
         setCurrentIndex((prev) => (prev - 1 + totalGroups) % totalGroups);
     };
+
+    const handleNavigateDestinos = (idDestino) =>{
+    navigate(`/clientes/destinos/${idDestino}`);
+  }
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, width: '300px', gap: 3 }} className={styles.Card_content_color}>
@@ -104,6 +111,7 @@ const CardEstadisticas = ({ nombreCard, cantNumero, promedio, destinos }) => {
                                     component="img"
                                     src={destino.imagen}
                                     alt={destino.nombre}
+                                    onClick={() =>handleNavigateDestinos(destino.idDestino)}
                                     sx={{
                                         position: 'absolute',
                                         top: 0,
@@ -112,6 +120,7 @@ const CardEstadisticas = ({ nombreCard, cantNumero, promedio, destinos }) => {
                                         height: '100%',
                                         objectFit: 'cover',
                                         transition: 'transform 0.3s',
+                                        cursor:'pointer',
                                         '&:hover': {
                                             transform: 'scale(1.05)'
                                         }

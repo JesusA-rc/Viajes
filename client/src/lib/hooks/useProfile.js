@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import agent from "../api/agent"
 import { useNavigate } from 'react-router';
 import { useMemo } from "react";
+import { toast } from "react-toastify";
 
 export const useProfile = (id) => {
     const queryClient = useQueryClient();
@@ -78,14 +79,52 @@ export const useProfile = (id) => {
     })
 
     const deletePhoto = useMutation({
-        mutationFn: async (photoId) => {
-            await agent.delete(`/profiles/${photoId}/photos`)
-        },
-        onSuccess: (_, photoId) => {
-            queryClient.setQueryData(['photos', id], (photos) => {
-                return photos?.filter(x => x.id !== photoId)
-            })
-        }
+    mutationFn: async (photoId) => {
+        await agent.delete(`/profiles/${photoId}/photos`);
+    },
+    onSuccess: (_, photoId) => {
+
+        queryClient.setQueryData(['photos', id], (photos) => {
+        return photos?.filter(x => x.id !== photoId);
+        });
+        
+
+        toast.success('Foto eliminada correctamente', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+    },
+    onError: (error, photoId, context) => {
+
+        queryClient.setQueryData(['photos', id], context.previousPhotos);
+        
+
+        toast.error(`Error al eliminar foto: ${error.message}`, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+    },
+    onMutate: async (photoId) => {
+
+        await queryClient.cancelQueries(['photos', id]);
+        const previousPhotos = queryClient.getQueryData(['photos', id]);
+
+        queryClient.setQueryData(['photos', id], (old) => {
+        return old?.filter(x => x.id !== photoId);
+        });
+        
+        return { previousPhotos };
+    }
     });
 
     const logoutUser = useMutation({
@@ -95,6 +134,17 @@ export const useProfile = (id) => {
         onSuccess: () =>{
             queryClient.removeQueries({queryKey: ['usuarioActual']});
             navigate('/company');
+        }
+    });
+
+    const loginUsuario = useMutation({
+        mutationFn: async (creds) => {
+            await agent.post('/login?useCookies=true', creds);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['usuarioActual']
+            });
         }
     });
 
@@ -124,6 +174,7 @@ export const useProfile = (id) => {
         deletePhoto,
         currentUser,
         loadingUserInfo,
-        logoutUser
+        logoutUser,
+        loginUsuario
     }
 }

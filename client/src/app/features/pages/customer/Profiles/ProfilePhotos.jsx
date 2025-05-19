@@ -6,9 +6,12 @@ import { useProfile } from "../../../../../lib/hooks/useProfile";
 
 export default function ProfilePhotos() {
     const { id } = useParams();
-    const { photos, loadingPhotos, isCurrentUser, uploadPhoto,
-        profile, setMainPhoto, deletePhoto } = useProfile(id); 
+    
+    const { photos, loadingPhotos, isCurrentUser, uploadPhoto, deletePhoto } = useProfile(Number(id)); 
     const [editMode, setEditMode] = useState(false);
+
+    console.log("Fotos del usuario:");
+    console.log(photos);
 
     const handlePhotoUpload = (file) => {
         uploadPhoto.mutate(file, {
@@ -18,9 +21,17 @@ export default function ProfilePhotos() {
         })
     }
 
-    console.log("Is current user?: " + isCurrentUser);
+
+
+    
+    const handleDelete = (id) => {
+        console.log("id foto" + id);
+        deletePhoto.mutate(id);
+    };
 
     if (loadingPhotos) return <Typography>Cargando fotos...</Typography>
+
+    console.log("Current user: " + isCurrentUser);
 
     if (!photos) return <Typography variant="h5" sx={{color:'white', fontWeight:'bold'}}>No se han encontrado fotos.</Typography>
 
@@ -55,25 +66,56 @@ export default function ProfilePhotos() {
                     }
                     }}>
                     {photos.map((item) => (
-                        <ImageListItem key={item.id} sx={{
-                            width: '200px',
-                            height: '200px',
-                            overflow: 'hidden'
-                        }}>
+                    <ImageListItem 
+                        key={item.id} 
+                        sx={{
+                        width: '200px',
+                        height: '200px',
+                        overflow: 'hidden',
+                        position: 'relative', 
+                        '&:hover .delete-button': {
+                            opacity: 1 
+                        }
+                        }}
+                    >
                         <img
-                                srcSet={`${item.url.replace('/upload/', '/upload/w_200,h_200,c_fill,f_auto,dpr_2,g_face/')}`}
-                                src={`${item.url.replace('/upload/', '/upload/w_200,h_200,c_fill,f_auto,g_face/')}`}
-                                alt="user profile"
-                                loading="lazy"
-                                style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                display: 'block',
-                                cursor:'pointer'
-                            }}
+                        srcSet={`${item.url.replace('/upload/', '/upload/w_200,h_200,c_fill,f_auto,dpr_2,g_face/')}`}
+                        src={`${item.url.replace('/upload/', '/upload/w_200,h_200,c_fill,f_auto,g_face/')}`}
+                        alt="user profile"
+                        loading="lazy"
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            display: 'block',
+                            cursor: 'pointer'
+                        }}
                         />
-                        </ImageListItem>
+                        
+                        {isCurrentUser && (
+                        <Button
+                            className="delete-button"
+                            onClick={() => handleDelete(item.id)}
+                            variant="contained"
+                            color="error"
+                            size="small"
+                            sx={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            opacity: 0,
+                            transition: 'opacity 0.3s ease',
+                            minWidth: 'auto',
+                            padding: '4px 8px',
+                            '&:hover': {
+                                backgroundColor: 'error.dark'
+                            }
+                            }}
+                        >
+                            Eliminar
+                        </Button>
+                        )}
+                    </ImageListItem>
                     ))}
                     </ImageList>
                     )}

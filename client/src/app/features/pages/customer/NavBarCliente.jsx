@@ -19,7 +19,7 @@ const NavBarCliente = () => {
     const solidColor = '#0056E1';
     const transparentColor = 'rgba(0, 86, 225, 0.5)';
 
-    const activeColorNav = '#272343';
+    const activeColorNav = '#e46161';
 
 
     const isActiveColorNav = (path) => {
@@ -27,12 +27,10 @@ const NavBarCliente = () => {
     };
 
     const navLinks = [
-        { text: 'Home', path: '/clientes/home' },
         { text: 'Profile', path: '/clientes/profile' },
         { text: 'Destinos List', path: '/clientes/destinos-list' },
         { text: 'Estadisticas', path: '/clientes/estadisticas' },
         { text: 'Buscar', path: '/clientes/buscar/destinos' },
-        { text: 'Forum', path: '/clientes/forum' },
     ];
 
 

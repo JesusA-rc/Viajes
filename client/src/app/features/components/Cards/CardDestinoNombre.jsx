@@ -1,7 +1,13 @@
 import React from 'react'
 import { Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router';
 
 const CardDestinoNombre = ({itemCard=[]}) => {
+  const navigate = useNavigate();
+
+  const handleNavigateDestinos = (idDestino) =>{
+    navigate(`/clientes/destinos/${idDestino}`);
+  }
 
    if (!itemCard || itemCard.length === 0) {
     return (
@@ -28,7 +34,9 @@ const CardDestinoNombre = ({itemCard=[]}) => {
                     backgroundPosition: 'center', 
                     borderRadius: '8px', 
                     overflow: 'hidden', 
+                    cursor: 'pointer',
                 }}
+                onClick={() =>handleNavigateDestinos(destino.idDestino)}
             >
                 <Box
                     sx={{

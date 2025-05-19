@@ -18,20 +18,24 @@ public class DeletePhoto
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
             var user = await userAccessor.GetFotosByUsuarioAsync();
-            var photo = user.FirstOrDefault(x => x.Id ==  request.PhotoId);
+            var photo = user.FirstOrDefault(x => x.Id == request.PhotoId);
 
             if (photo == null) 
-                return Result<Unit>.Failure("Cannot find photo", 400);
+                return Result<Unit>.Failure("Foto no encontrada", 404);
+                
+            // if (!string.IsNullOrEmpty(photo.PublicId))
+            // {
+            //     var cloudinaryResult = await photoService.DeletePhoto(photo.PublicId);
+            //     if (!cloudinaryResult) 
+            //         return Result<Unit>.Failure("Error al eliminar de Cloudinary", 500);
+            // }
 
-            await photoService.DeletePhoto(photo.PublicId);
-
-            user.Remove(photo);
-
+            context.UsuarioFotos.Remove(photo);
             var result = await context.SaveChangesAsync(cancellationToken) > 0;
 
             return result
                 ? Result<Unit>.Success(Unit.Value)
-                : Result<Unit>.Failure("Problem deleting photo", 400);
+                : Result<Unit>.Failure("Error al guardar cambios en base de datos", 500);
         }
     }
 }

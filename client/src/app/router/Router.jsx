@@ -20,6 +20,7 @@ import AdminCrear from '../features/pages/AdminCrear.jsx'
 import RequiereAuth from './RequiereAuth.jsx'
 import ClienteLayout from '../features/pages/customer/ClienteLayout.jsx'
 import ClienteConfiguracion from '../features/pages/customer/ClienteConfiguracion.jsx'
+import DestinoPage from '../features/pages/customer/DestinoPage.jsx'
 
 export const router = createBrowserRouter([
     {
@@ -49,7 +50,8 @@ export const router = createBrowserRouter([
                         { path: '/clientes/estadisticas', element: <Estadisticas /> },
                         { path: '/clientes/buscar/destinos', element: <BuscarPagina /> },
                         { path: '/clientes/profile', element: <Profile /> },
-                        { path: '/clientes/configuracion/:id', element: <ClienteConfiguracion/> }
+                        { path: '/clientes/configuracion/:id', element: <ClienteConfiguracion/> },
+                        { path: '/clientes/destinos/:id', element: <DestinoPage/>}
                     ]
                     }
                 ]

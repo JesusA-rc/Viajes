@@ -13,7 +13,9 @@ const Estadisiticas = () => {
         !loadingUserInfo && currentUser ? currentUser.id : null
     );
  
-    const listEstadisticas = ['Categorias','Guias','Turismo'];
+    //const listEstadisticas = ['Categorias','Guias','Turismo'];
+    const listEstadisticas = [];
+
     const [activeButton, setActiveButton] = useState('1'); 
     const buttons = [
         { value: '1', label: 'Cantidad visitado' },
@@ -50,7 +52,7 @@ const Estadisiticas = () => {
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831'}}>
 
         <Box sx={{ 
                 display:'flex',
@@ -95,7 +97,6 @@ const Estadisiticas = () => {
                                         activeButton={activeButton}
                                         setActiveButton={setActiveButton}
                                     />
-
                                 </Box>
                            </Box>
 

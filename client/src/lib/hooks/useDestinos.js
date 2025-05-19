@@ -58,3 +58,19 @@ export const useDestinos = () => {
     };
 }
 
+
+export function useDestinoByID(id) {
+  return useQuery({
+    queryKey: ['destino', id],
+    queryFn: async () => {
+      const { data } = await agent.get(`/destinos/${id}`);
+      return data;
+    },
+    enabled: !!id, 
+    staleTime: 1000 * 60 * 5, 
+    retry: (failureCount, error) => {
+      if (error.response?.status === 404) return false;
+      return failureCount < 3; 
+    }
+  });
+}

@@ -15,7 +15,7 @@ const PopularDestinos = () => {
     return <Typography>Cargando destinos...</Typography>;
   }
 
-  const itemsPerPage = isMobile ? 1 : isTablet ? 4 : 10; 
+  const itemsPerPage = isMobile ? 1 : isTablet ? 4 : 6; 
   
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>

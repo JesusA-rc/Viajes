@@ -39,22 +39,6 @@ const Footer = () => {
                         <Link href="#">Contact</Link>
                     </Box>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                    <Box sx={{display: 'flex', flexDirection: 'column', gap:2}}>
-                        <Typography variant="subtitle1">Resources</Typography>
-                        <Link href="#">Examples</Link>
-                        <Link href="#">Community</Link>
-                        <Link href="#">FAQs</Link>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <Box sx={{display: 'flex', flexDirection: 'column', gap:2}}>
-                        <Typography variant="subtitle1">Legal</Typography>
-                        <Link href="#">Privacy</Link>
-                        <Link href="#">Terms</Link>
-                        <Link href="#">Security</Link>
-                    </Box>
-                </Grid>
             </Grid>
 
             <Box sx={{ mt: 2 }}>
