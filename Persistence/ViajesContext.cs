@@ -28,6 +28,7 @@ public partial class ViajesContext :  IdentityDbContext<Usuario, IdentityRole<in
     public DbSet<DestinoCategoria> DestinoCategorias { get; set; }
     
     public virtual DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<UsuarioFoto> UsuarioFotos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +47,12 @@ public partial class ViajesContext :  IdentityDbContext<Usuario, IdentityRole<in
             b.Property(u => u.FechaCreacion).HasDefaultValueSql("GETDATE()");
             b.Property(e => e.Estado).HasDefaultValue(true);
         });
+
+        modelBuilder.Entity<UsuarioFoto>()
+            .HasOne(f => f.Usuario)
+            .WithMany(u => u.FotosAdicionales)
+            .HasForeignKey(f => f.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Categorias>(entity =>
         {

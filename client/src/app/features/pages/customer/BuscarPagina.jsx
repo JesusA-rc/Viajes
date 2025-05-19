@@ -7,10 +7,10 @@ import { useDestinos } from '../../../../lib/hooks/useDestinos';
 import { FiltrosContext } from '../../contexts/FiltrosContext';
 import FilterDropdowns from '../../components/Stats/FilterDropdowns';
 import { useGetEstadosByUsuarioId } from '../../../../lib/hooks/useEstadosDestino';
-import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
+import { useProfile } from '../../../../lib/hooks/useProfile';
 
 const BuscarPagina = () => {
-  const { currentUser, loadingUserInfo } = useUsuarios();
+  const { currentUser, loadingUserInfo } = useProfile();
   const { data: estadosUsuario, isLoading: isLoadingEstados } = useGetEstadosByUsuarioId(
     !loadingUserInfo && currentUser ? currentUser.id : null
   );
@@ -56,7 +56,7 @@ const BuscarPagina = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#222831', minHeight:'100vh' }}>
-      <NavBarCliente />
+
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, padding: 3 }}>
         <Box sx={{display: 'flex', alignItems:'center', justifyContent:'center', flexWrap: 'wrap'}}>
           <FormControl fullWidth sx={{ mb: 3, maxWidth: '50%' }}>
@@ -92,6 +92,7 @@ const BuscarPagina = () => {
                 destinoId = {d.idDestino}
                 estadoUsuario={d.estadoUsuario}
                 usuarioId = {currentUser.id}
+                destino ={d}
               />
             ))
           ) : (

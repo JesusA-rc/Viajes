@@ -43,12 +43,12 @@ export const useUsuarios = () => {
     });
 
     const {data: currentUser, isLoading: loadingUserInfo} = useQuery({
-        queryKey: ['usuariose'],
+        queryKey: ['usuarioActual'],
         queryFn: async () => {
             const response = await agent.get('/account/user-info');
             return response.data;
         },
-        enabled: !queryClient.getQueryData(['usuarios']) && 
+        enabled: !queryClient.getQueryData(['usuarioActual']) && 
         location.pathname !== 'login' &&
         location.pathname !== '/register'
     });

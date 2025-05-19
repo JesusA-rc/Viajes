@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 
 const MediaSection = ({ title, items }) => {
+
     return (
         <Box sx={{ mb: 4, height: 'auto', backgroundColor: '#393e46', padding: 2, borderRadius: '15px', width:'100%' }}>
             <Typography variant="h6" gutterBottom sx={{color: '#eeeeee', fontWeight: 'bold'}}>

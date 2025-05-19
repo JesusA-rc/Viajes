@@ -9,14 +9,19 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { useFavoritosUsuario } from '../../../../lib/hooks/useFavoritosUsuario';
 
 
-const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
+
+const ImageCard = ({estadoUsuario, usuarioId, destino}) => {
+
   const [isHovered, setIsHovered] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [estado, setEstado] = useState('');
   const [calificacion, setCalificacion] = useState(5);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const { isFavorito, addFavorito, removeFavorito } = useFavoritosUsuario(usuarioId);
 
   const estados = ['Visitados', 'Planeados', 'No volvería a ir'];
   const { updateEstado, deleteEstado } = useEstadosDestino();
@@ -32,6 +37,7 @@ const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
 
   const handleOpenModal = () => {
     setOpenModal(true);
+
   };
 
   const handleCloseModal = () => {
@@ -40,12 +46,30 @@ const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
 
   const handleSubmit = () => {
     if (estadoUsuario && estadoUsuario.id) {
-      updateEstado.mutate({ id: estadoUsuario.id, estado, title: title });
+      updateEstado.mutate({ id: estadoUsuario.id, estado, title: destino.nombre });
     } else {
-      createEstado.mutate({ UsuarioId: usuarioId, DestinoId: destinoId, Estado: estado, title: title });
+      createEstado.mutate({ UsuarioId: usuarioId, DestinoId: destino.idDestino, Estado: estado, title:destino.nombre });
     }
 
     handleCloseModal();
+  };
+
+  const handleToggleFavorito = async () => {
+    try {
+      if (isFavorito(destino.idDestino)) {
+        await removeFavorito({ 
+          usuarioId: usuarioId, 
+          destinoId: destino.idDestino
+        });
+      } else {
+        await addFavorito({ 
+          UsuarioId: usuarioId, 
+          DestinoId: destino.idDestino
+        });
+      }
+    } catch (error) {
+      console.error("Error en favoritos:", error);
+    }
   };
 
   return (
@@ -74,8 +98,8 @@ const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
             borderRadius: 5,
             position: 'relative',
           }}
-          alt={title}
-          src={image}
+          alt={destino.nombre}
+          src={destino.imagen}
         />
 
         {isHovered && (
@@ -99,7 +123,7 @@ const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
         )}
 
         <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 'bold' }}>
-          {title}
+          {destino.nombre}
         </Typography>
       </Box>
 
@@ -114,26 +138,61 @@ const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
+          width: 700,
           boxShadow: 24,
           p: 4,
-          borderRadius: 2
+          borderRadius: 2,
+          bgcolor:'#352f44',
+          color: 'white'
         }}>
-          <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-            Editar {title}
-          </Typography>
+          <Box sx={{display:'flex', justifyContent:'space-between'}}>
+            <Box sx={{display:'flex', gap: 2,  alignItems:'center'}}>
+              <Box 
+                component='img'
+                src={destino.imagen}  
+                alt={`Imagen de ${destino.nombre}`}  
+                sx={{
+                  width: 125, 
+                  height: 175, 
+                  objectFit: 'cover', 
+                }}
+              />
+              <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                Editar { destino.nombre}
+              </Typography>
+            </Box>
 
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <InputLabel id="estado-label">Estado</InputLabel>
+            <Box sx={{display:'flex', alignItems:'center', gap:2}}>
+              <IconButton 
+                onClick={handleToggleFavorito}
+                aria-label="favorite"
+                sx={{
+                  color: isFavorito(destino.idDestino) ? 'red' : 'white',
+                  '&:hover': {
+                    color: isFavorito(destino.idDestino) ? 'darkred' : 'lightgray'
+                  }
+                }}
+              >
+                <FavoriteIcon />
+              </IconButton>
+              <Button onClick={handleSubmit} variant="contained" color="primary" disabled={estado==''}>
+                Guardar
+              </Button>
+            </Box>
+
+          </Box>
+
+          <FormControl fullWidth sx={{ mb: 3, mt: 3 }}>
+            <InputLabel id="estado-label" sx={{color:'white'}}>Estado</InputLabel>
             <Select
               labelId="estado-label"
               value={estado}
               label="Estado"
               onChange={(e) => setEstado(e.target.value)}
+              sx={{color:'white'}}
             >
               {estados.map((estado) => (
-                <MenuItem key={estado} value={estado}>
+                <MenuItem key={estado} value={estado} >
                   {estado}
                 </MenuItem>
               ))}
@@ -160,9 +219,7 @@ const ImageCard = ({ image, title,  estadoUsuario, destinoId,usuarioId}) => {
             <Button onClick={handleCloseModal} variant="outlined">
               Cancelar
             </Button>
-            <Button onClick={handleSubmit} variant="contained" color="primary" disabled={estado==''}>
-              Guardar
-            </Button>
+
            {estadoUsuario && (
             <Button
               onClick={() => setOpenConfirmDialog(true)}

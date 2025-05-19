@@ -13,12 +13,22 @@ public class MappingProfile : Profile
 
         CreateMap<Usuario, UsuarioDto>();
         CreateMap<Favoritos, FavoritosDto>().ReverseMap();
+
+        CreateMap<Favoritos, FavoritosDto>()
+            .ForMember(dest => dest.Destino, opt => opt.MapFrom(src => src.Destino));
+        
         CreateMap<EstadoDestino, EstadosDestinoDTO>().ReverseMap();
         CreateMap<EstadoDestino, EstadosDestinoDetalleDTO>()
             .ForMember(dest => dest.UsuarioNombre, opt => opt.MapFrom(src => src.Usuario.Nombre))
             .ForMember(dest => dest.Destino, opt => opt.MapFrom(src => src.Destino));
 
         CreateMap<DestinoCategoria, DestinoCategoriaDTO>().ReverseMap();
+        CreateMap<DestinoCategoria, CategoriaDto>()
+            .ForMember(dest => dest.IdCategoria, opt => opt.MapFrom(src => src.Categoria.IdCategoria))
+            .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.Categoria.Nombre));
+
+        CreateMap<Destinos, DestinoDto>()
+            .ForMember(dest => dest.Categorias, opt => opt.MapFrom(src => src.DestinoCategoria));
     
 
         CreateMap<UsuarioDto, Usuario>()

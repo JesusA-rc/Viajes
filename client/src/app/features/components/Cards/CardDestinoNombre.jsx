@@ -18,7 +18,7 @@ const CardDestinoNombre = ({itemCard=[]}) => {
 
         {itemCard.map((destino) => (
             <Box
-                key={destino.id_categoria}
+                key={destino.idDestino}
                 sx={{
                     position: 'relative',
                     width: '150px', 

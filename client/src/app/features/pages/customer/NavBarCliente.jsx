@@ -3,18 +3,24 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { AppBar, Toolbar, Typography, Button, Avatar, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useLocation } from 'react-router-dom';
-import { useUsuarios } from '../../../../lib/hooks/useUsuarios';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useProfile } from '../../../../lib/hooks/useProfile';
 
 const NavBarCliente = () => {
     const [isHovered, setIsHovered] = useState(false);
-    const { logoutUser } = useUsuarios();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const { logoutUser, currentUser, loadingUserInfo } = useProfile();
+    if(loadingUserInfo){
+        return <Typography>Cargando...</Typography>
+    }
 
     const solidColor = '#0056E1';
     const transparentColor = 'rgba(0, 86, 225, 0.5)';
 
     const activeColorNav = '#272343';
-    const location = useLocation();
+
 
     const isActiveColorNav = (path) => {
         return location.pathname === path;
@@ -29,7 +35,7 @@ const NavBarCliente = () => {
         { text: 'Forum', path: '/clientes/forum' },
     ];
 
-    const [anchorEl, setAnchorEl] = useState(null);
+
     const open = Boolean(anchorEl);
 
     const handleClick = (event) => {
@@ -37,8 +43,17 @@ const NavBarCliente = () => {
     };
 
     const handleClose = () => {
-        setAnchorEl(null);
-        logoutUser.mutate();
+        setAnchorEl(null); 
+    };
+
+    const handleLogout = () => {
+        handleClose();
+        logoutUser.mutate(); 
+    };
+    
+    const handleGoConfiguration = () => {
+        handleClose(); 
+        navigate(`/clientes/configuracion/${currentUser.id}`);  
     };
 
     return (
@@ -102,7 +117,10 @@ const NavBarCliente = () => {
                         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                         >
-                        <MenuItem onClick={handleClose} color="error">
+                        <MenuItem onClick={handleGoConfiguration} color="error">
+                            Configuracion
+                        </MenuItem>
+                        <MenuItem onClick={handleLogout} color="error">
                             Cerrar sesión
                         </MenuItem>
                     </Menu>

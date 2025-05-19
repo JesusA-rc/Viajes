@@ -61,7 +61,8 @@ public class AccountController(SignInManager<Usuario> signInManager) : BaseApiCo
             user.Nombre,
             user.Email,
             user.Id,
-            user.Estado
+            user.Estado,
+            user.FotoPerfil
         });
     }
     

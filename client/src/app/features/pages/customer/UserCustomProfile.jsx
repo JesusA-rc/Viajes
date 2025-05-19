@@ -8,6 +8,9 @@ const UserCustomProfile = () => {
       const profileUserImg = 'https://i.pinimg.com/736x/5a/62/ea/5a62ea77b66097b7ea1f5a35e749cf2a.jpg';
       const {currentUser, loadingUserInfo} = useUsuarios();
 
+      console.log("Usuario actual");
+      console.log(currentUser);
+
       if(loadingUserInfo){
         <Typography>Cargando...</Typography>
       }
@@ -35,7 +38,7 @@ const UserCustomProfile = () => {
     >
       <Box
         component="img"
-        src={profileUserImg} 
+        src={currentUser.fotoPerfil || profileUserImg} 
         alt="Perfil del usuario"
         sx={{
           width: '100px',

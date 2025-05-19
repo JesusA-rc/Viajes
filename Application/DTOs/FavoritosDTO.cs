@@ -9,4 +9,7 @@ public class FavoritosDto
 
     [Required(ErrorMessage = "El ID del destino es obligatorio.")]
     public int DestinoId { get; set; }
+
+
+    public DestinoDto? Destino { get; set; }
 }

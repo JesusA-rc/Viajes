@@ -8,11 +8,12 @@ using Application.Validators;
 using API.Middleware;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Application.interfaces;
+using Infrastructure.Security;
+using Infrastructure.Photos;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,10 @@ builder.Services.AddScoped<FavoritosServices>();
 builder.Services.AddScoped<EstadosDestinoService>();
 builder.Services.AddScoped<DestinoCategoriaService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddScoped<IUserFotoAccessor, UserFotoAccesor>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.Profiles.Commands.AddPhoto.Handler).Assembly));
 
 builder.Services.AddValidatorsFromAssemblyContaining<CategoriaValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<DestinoValidator>();
@@ -55,8 +60,11 @@ builder.Services.AddIdentityApiEndpoints<Usuario>(opt =>
     opt.User.RequireUniqueEmail = true;
 })
 .AddRoles<IdentityRole<int>>()
-.AddApiEndpoints()  // 👈 ¡Esta línea es crucial!
+.AddApiEndpoints()
 .AddEntityFrameworkStores<ViajesContext>();
+
+builder.Services.Configure<CloudinarySettings>(builder.Configuration
+    .GetSection("CloudinarySettings"));
 
 
 builder.Services.ConfigureApplicationCookie(options =>

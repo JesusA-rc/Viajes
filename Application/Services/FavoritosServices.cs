@@ -26,6 +26,8 @@ namespace Application.Services
             var favoritos = await _context.Favoritos
                 .Where(f => f.UsuarioId == usuarioId)
                 .Include(f => f.Destino)
+                    .ThenInclude(d => d.DestinoCategoria)
+                        .ThenInclude(dc => dc.Categoria)
                 .ToListAsync();
 
             if (favoritos == null || favoritos.Count == 0)
