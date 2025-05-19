@@ -26,9 +26,8 @@ const Profile = () => {
   console.log(favoritosList);
 
   const statsData = [
-    { value: '496', label: 'T ' },
-    { value: '169.5', label: 'Days Watched' },
-    { value: '79.6', label: 'Mean Score' },
+    { value: '496', label: 'Viajes ' },
+    { value: '79.6', label: 'Puntuacion promedio' },
   ];
 
   return (

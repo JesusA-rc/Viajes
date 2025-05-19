@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import agent from '../api/agent';
+import { toast } from "react-toastify";
 
 export const useDestinoCategoria = () => {
     const queryClient = useQueryClient();
@@ -31,7 +32,7 @@ export const useDestinoCategoria = () => {
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['relacionesDestinoCategoria'] });
-            alert('Relación creada exitosamente!');
+            toast.success('Relación creada exitosamente!');
         }
     });
 

@@ -19,8 +19,6 @@ const AdminNavBar = () => {
   const navLinks = [
       { text: 'Ver', path: '/adminDestinos/ver' },
       { text: 'Crear', path: '/adminDestinos/crear' },
-      { text: 'Editar', path: '/adminDestinos/editar' },
-      { text: 'Eliminar', path: '/adminDestinos/eliminar' }
   ];  
 
   const handleCloseNavMenu = () => {

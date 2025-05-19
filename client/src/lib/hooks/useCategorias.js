@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
 import agent from '../api/agent'
+import { toast } from "react-toastify";
 
 export const useCategorias = () =>{
     const queryClient = useQueryClient();
@@ -13,15 +14,29 @@ export const useCategorias = () =>{
     });
 
     const updateCategoria = useMutation({
-        mutationFn: async (categoria) =>{
-            await agent.put(`/categorias/${categoria.idCategoria}`, categoria)
+        mutationFn: async (categoria) => {
+            try {
+                const response = await agent.put(`/categorias/${categoria.idCategoria}`, categoria);
+                return response.data;
+            } catch (error) {
+                const errorMessage = error.response?.data?.error ||
+                                    (Array.isArray(error.response?.data?.error)
+                                    ? error.response.data.error.join('\n')
+                                    : '') ||
+                                    error.message;
+
+                throw new Error(errorMessage);
+            }
         },
-        onSuccess:  async () =>{
-            await queryClient.invalidateQueries({
-                queryKey: ['categorias']
-            })
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['categorias'] });
+            toast.success("Categoría actualizada correctamente");
+        },
+        onError: (error) => {
+            toast.error("Error al actualizar: " + error.message);
         }
     });
+
 
     const createCategoria = useMutation({
         mutationFn: async (nuevaCategoria) => {

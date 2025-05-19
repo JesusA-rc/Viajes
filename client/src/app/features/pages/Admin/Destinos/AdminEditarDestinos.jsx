@@ -33,11 +33,9 @@ const AdminEditarDestinos = () => {
                 pais: data.pais,
                 region: data.region
             });
-            alert('Destino actualizado correctamente');
             reset();
         } catch (error) {
             console.error('Error al actualizar el destino:', error);
-            alert('Ocurrió un error al actualizar el destino');
         }
     };
 
@@ -50,7 +48,7 @@ const AdminEditarDestinos = () => {
     }
 
   return (
-    <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding:10 }}>
         <Typography variant="h5">Editar Destino</Typography>
 
         <InputLabel id="destino-select-label">Seleccionar Destino</InputLabel>

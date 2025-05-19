@@ -16,11 +16,11 @@ public class CategoriaValidator : AbstractValidator<CategoriaDto>
 
         RuleFor(c => c.Nombre)
             .NotEmpty().WithMessage("El nombre de la categoría es obligatorio.")
-            .MaximumLength(20).WithMessage("El nombre no puede tener más de 20 caracteres.");
+            .MaximumLength(100).WithMessage("El nombre no puede tener más de 100 caracteres.");
 
         RuleFor(c => c.Descripcion)
             .NotEmpty().WithMessage("La descripción es obligatoria.")
-            .MaximumLength(100).WithMessage("La descripción no puede tener más de 100 caracteres.");
+            .MaximumLength(200).WithMessage("La descripción no puede tener más de 200 caracteres.");
     }
 
     public async Task<bool> CategoriaExist(int idCategoria, CancellationToken cancellationToken){

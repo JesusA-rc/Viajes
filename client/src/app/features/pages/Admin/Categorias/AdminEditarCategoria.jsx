@@ -27,11 +27,9 @@ const AdminEditarCategoria = () => {
                 nombre: data.nombre,
                 descripcion: data.descripcion,
             });
-            alert('Categoría actualizada correctamente');
             reset();
         } catch (error) {
             console.error('Error al actualizar la categoría:', error);
-            alert('Ocurrió un error al actualizar la categoría');
         }
     };
 
@@ -44,7 +42,7 @@ const AdminEditarCategoria = () => {
     }
 
     return (
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 4 }}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 10 }}>
             <Typography variant="h5">Editar Categoría</Typography>
 
             <InputLabel id="categoria-select-label">Seleccionar Categoría</InputLabel>

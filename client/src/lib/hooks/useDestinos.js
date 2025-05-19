@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+
 import agent from '../api/agent'
 
 export const useDestinos = () => {
@@ -47,13 +48,30 @@ export const useDestinos = () => {
     });
 
     const updateDestino = useMutation({
-        mutationFn: async (actualizarDestino) =>{
-            await agent.put(`/destinos/${actualizarDestino.idDestino}`,actualizarDestino);
+        mutationFn: async (actualizarDestino) => {
+            try {
+                const response = await agent.put(`/destinos/${actualizarDestino.idDestino}`, actualizarDestino);
+                return response.data;
+            } catch (error) {
+                const errorMessage = error.response?.data?.error || 
+                                    (Array.isArray(error.response?.data) ? error.response.data.join('\n') : '') || 
+                                    error.message;
+
+                if (Array.isArray(errorMessage)) {
+                    throw new Error(errorMessage.join('\n'));
+                }
+                throw new Error(errorMessage);
+            }
         },
-        onSuccess: async () =>{
+        onSuccess: async () => {
+            toast.success("Destino actualizado correctamente");
             await queryClient.invalidateQueries({ queryKey: ['destinos'] });
         },
+        onError: (error) => {
+            toast.error(error.message);
+        }
     });
+
 
     const deleteDestino = useMutation({
         mutationFn: async (idDestino) => {

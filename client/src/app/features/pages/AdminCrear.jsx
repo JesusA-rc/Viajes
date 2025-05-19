@@ -20,7 +20,7 @@ const AdminCrear = () => {
         iD_Destino: Number(data.iD_Destino),
         iD_Categoria: Number(data.iD_Categoria)
       });
-      toast.success("Se ha creado la relacion correctamente.");
+
     } catch (error) {
       toast.error(error.message);
     }

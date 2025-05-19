@@ -16,16 +16,12 @@ function App() {
     {
       name: 'Categorías',
       subItems: [
-        { name: 'Categorias', path: '/adminCategorias' },
-        { name: 'Crear', path: '/adminCrearCategoria' },
         { name: 'Editar', path: '/adminEditarCategoria' },
       ],
     },
     {
       name: 'Destinos',
       subItems: [
-        { name: 'Destinos', path: '/adminDestinos' },
-        { name: 'Crear', path: '/adminAgregarDestinos' },
         { name: 'Editar', path: '/admindEditarDestino' },
       ],
     },

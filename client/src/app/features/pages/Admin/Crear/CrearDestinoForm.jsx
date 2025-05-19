@@ -1,6 +1,6 @@
 import { Box, Typography, Button } from '@mui/material'
 import { useForm } from 'react-hook-form';
-import { toast } from "react-toastify";
+
 import TextInput from '../../../components/TextInput';
 import { useDestinos } from '../../../../../lib/hooks/useDestinos';
 
@@ -19,7 +19,6 @@ const CrearDestinoForm = () => {
 
       const onSubmit = async (data) => {
           await createDestino.mutateAsync(data);
-          toast.success("Categoria creada correctamente.");
           reset();
       };
 
