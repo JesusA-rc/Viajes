@@ -30,22 +30,10 @@ builder.Services.AddControllers(opt =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-builder.Services.AddSqlServer<ViajesContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
-builder.Services.AddCors();
-builder.Services.AddDbContext<ViajesContext>(options =>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<DestinosServices>();
-builder.Services.AddScoped<CategoriasServices>();
-builder.Services.AddScoped<UsuariosServices>();
-builder.Services.AddScoped<FavoritosServices>();
-builder.Services.AddScoped<EstadosDestinoService>();
-builder.Services.AddScoped<DestinoCategoriaService>();
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddScoped<IUserFotoAccessor, UserFotoAccesor>();
-builder.Services.AddScoped<IPhotoService, PhotoService>();
+builder.Services.AddApplicationServices(builder.Configuration);
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.Profiles.Commands.AddPhoto.Handler).Assembly));
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 
 builder.Services.AddValidatorsFromAssemblyContaining<CategoriaValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<DestinoValidator>();
@@ -54,6 +42,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<FavoritosValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<EstadosDestinoService>();
 builder.Services.AddValidatorsFromAssemblyContaining<DestinoCategoriaValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
+
+builder.Services.AddMemoryCache();
+builder.Services.AddTransient(typeof(ICachedPaginationService<>), typeof(CachedPaginationService<>));
 
 builder.Services.AddIdentityApiEndpoints<Usuario>(opt =>
 {

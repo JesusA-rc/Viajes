@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
+import { useState } from 'react';
 import agent from '../api/agent'
 import { toast } from "react-toastify";
 
@@ -77,3 +78,76 @@ export const useCategorias = () =>{
         deleteCategoria
     };
 }
+
+
+
+
+export const useCategoriasPagination = () => {
+    const queryClient = useQueryClient();
+    const [paginationState, setPaginationState] = useState({
+        page: 1,
+        limit: 10
+    });
+
+    const { 
+        data: paginatedData, 
+        isLoading, 
+        isFetching, 
+        isPreviousData 
+    } = useQuery({
+        queryKey: ['categorias', 'pagination', paginationState],
+        queryFn: () => agent.get('/categorias/pagination', {
+            params: paginationState
+        }).then(res => res.data),
+        keepPreviousData: true,
+        staleTime: 30 * 1000 // 30 segundos
+    });
+
+    const handlePageChange = (newPage) => {
+        if (!isPreviousData && paginatedData?.totalPages && newPage <= paginatedData.totalPages) {
+            setPaginationState(prev => ({
+                ...prev,
+                page: newPage
+            }));
+        }
+    };
+
+    const handleLimitChange = (newLimit) => {
+        setPaginationState(prev => ({
+            ...prev,
+            limit: newLimit,
+            page: 1 // Resetear a la primera página al cambiar el límite
+        }));
+    };
+
+    // Función para invalidar la caché de paginación
+    const invalidatePagination = () => {
+        queryClient.invalidateQueries(['categorias', 'pagination']);
+    };
+
+    const deleteCategoria = useMutation({
+        mutationFn: async (idCategoria) => {
+            await agent.delete(`/categorias/${idCategoria}`);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['categorias'] });
+        },
+    });
+
+    return {
+        categorias: paginatedData?.items || [], // Cambiado de .data a .items
+        pagination: {
+            page: paginatedData?.page || 1,
+            limit: paginatedData?.limit || 10,
+            totalItems: paginatedData?.totalItems || 0,
+            totalPages: paginatedData?.totalPages || 1
+        },
+        isLoading,
+        isFetching,
+        isPreviousData,
+        handlePageChange,
+        invalidatePagination,
+        deleteCategoria,
+        handleLimitChange, 
+    }; 
+}; 

@@ -35,6 +35,11 @@ public class CategoriasServices
         return Result<IEnumerable<CategoriaDto>>.Success(categoriasDto);
     }
 
+    public async Task<List<Categorias>> GetAllAsList()
+    {
+        return await _context.Categorias.ToListAsync();
+    }
+
     public async Task<Result<CategoriaDto>> GetById(int id)
     {
         var categoria = await _context.Categorias.FindAsync(id);
