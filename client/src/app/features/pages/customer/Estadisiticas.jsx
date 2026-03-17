@@ -13,8 +13,7 @@ const Estadisiticas = () => {
         !loadingUserInfo && currentUser ? currentUser.id : null
     );
  
-    //const listEstadisticas = ['Categorias','Guias','Turismo'];
-    const listEstadisticas = [];
+    const listEstadisticas = ['Categorias','Guias','Turismo'];
 
     const [activeButton, setActiveButton] = useState('1'); 
     const buttons = [
@@ -25,8 +24,6 @@ const Estadisiticas = () => {
     if(isLoading){
         return <Typography>Cargando estadisticas...</Typography>
     }   
-
-
 
     const destinosPorCategoria = allDestinosUsuarios?.reduce((acc, destinoUsuario) => {
         destinoUsuario.destino.categorias?.forEach(categoria => {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button, Stack, IconButton, useMediaQuery, Typography } from '@mui/material';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -13,15 +12,15 @@ const PaginationControls = ({
   page,
   limit,
   totalItems,
-  totalPages = Math.ceil(totalItems / limit), // Calcula totalPages si no se proporciona
+  totalPages,
   onPageChange,
   isFetching,
   isPreviousData
-}) => {
+}) => 
+{
   const isMobile = useMediaQuery('(max-width:600px)');
   const disabled = isFetching || isPreviousData;
 
-  // Mostrar información de paginación (opcional)
   const itemsInfo = `Mostrando ${(page - 1) * limit + 1}-${Math.min(page * limit, totalItems)} de ${totalItems}`;
 
   const getDisplayedPages = () => {
@@ -40,12 +39,10 @@ const PaginationControls = ({
       alignItems: 'center', 
       flexWrap: 'wrap' 
     }}>
-      {/* Información de items (opcional) */}
       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
         {itemsInfo}
       </Typography>
 
-      {/* Controles de paginación */}
       <Box sx={{ display: 'flex', gap: 1 }}>
         {!isMobile && (
           <IconButton
@@ -57,7 +54,6 @@ const PaginationControls = ({
             <FirstPageIcon fontSize="small" />
           </IconButton>
         )}
-
         <IconButton
           aria-label="previous page"
           size="small"
@@ -66,7 +62,6 @@ const PaginationControls = ({
         >
           <ChevronLeftIcon fontSize="small" />
         </IconButton>
-
         <Stack direction="row" spacing={0.5} alignItems="center">
           {getDisplayedPages().map((pageNumber) => (
             <Button
@@ -107,7 +102,7 @@ const PaginationControls = ({
         >
           <ChevronRightIcon fontSize="small" />
         </IconButton>
-
+        
         {!isMobile && (
           <IconButton
             aria-label="last page"

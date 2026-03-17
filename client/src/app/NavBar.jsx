@@ -13,49 +13,49 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import TypographyNavBar from './features/components/TypographyNavBar';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
 const pages = ['Destinos', 'Explora', 'Experiencias'];
-const settings = ['Profile', 'login','register'];
+const settings = ['Profile', 'login', 'register'];
 const NavBar = () => {
 
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const navigate = useNavigate();
-  
-    const handleOpenNavMenu = (event) => {
-      setAnchorElNav(event.currentTarget);
-    };
-    const handleOpenUserMenu = (event) => {
-      setAnchorElUser(event.currentTarget);
-    };
-  
-    const handleCloseNavMenu = () => {
-      setAnchorElNav(null);
-    };
-  
-    const handleCloseUserMenu = (setting) => {
-      setAnchorElUser(null);
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
 
-      if(setting == 'Profile'){
-        navigate('/clientes/profile');
-      }
-  
-      if (setting === 'register') {
-        navigate('/clientes/register'); 
-      }
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
 
-      if (setting === 'login') {
-        navigate('/clientes/login'); 
-      }
-    };
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = (setting) => {
+    setAnchorElUser(null);
+
+    if (setting == 'Profile') {
+      navigate('/clientes/profile');
+    }
+
+    if (setting === 'register') {
+      navigate('/clientes/register');
+    }
+
+    if (setting === 'login') {
+      navigate('/clientes/login');
+    }
+  };
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <TypographyNavBar header={'LOGO'}/>
+          <TypographyNavBar header={'LOGO'} />
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -124,10 +124,10 @@ const NavBar = () => {
                 horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
-              onClose={()=>handleCloseUserMenu(null)}
+              onClose={() => handleCloseUserMenu(null)}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={()=>handleCloseUserMenu(setting)}>
+                <MenuItem key={setting} onClick={() => handleCloseUserMenu(setting)}>
                   <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
                 </MenuItem>
               ))}

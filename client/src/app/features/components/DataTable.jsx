@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -27,12 +27,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import SearchBar from './SearchBar';
 import PaginationControls from './PaginationControls';
+import SearchBarPagination from './SearchBarPagination';
 
 const DataTable = ({ 
   columns, 
-  data = [], // Valor por defecto para evitar undefined errors
+  data = [], 
   actions: customActions = [], 
   onEdit, 
   onDelete,
@@ -45,7 +45,6 @@ const DataTable = ({
     isFetching: false
   }
 }) => {
-  // Desestructuración de las props de paginación
   const {
     page,
     limit,
@@ -65,23 +64,20 @@ const DataTable = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  // Manejo de cambio de límite de items por página
   const handleChangeRowsPerPage = (event) => {
     const newLimit = parseInt(event.target.value, 10);
     onLimitChange(newLimit);
   };
 
-  // Configuración de paginación
   const paginationConfig = {
     page,
     limit,
     totalItems,
     totalPages: Math.ceil(totalItems / limit),
-    onPageChange, // Usamos directamente onPageChange
+    onPageChange,
     isFetching
   };
 
-  // Acciones del DataTable
   const handleDeleteClick = (item) => {
     if (onDelete) {
       setItemToDelete(item);
@@ -101,7 +97,6 @@ const DataTable = ({
     setItemToDelete(null);
   };
 
-  // Construcción de acciones disponibles
   const builtInActions = [
     ...(onEdit ? [{
       type: 'edit',
@@ -120,11 +115,24 @@ const DataTable = ({
   const allActions = [...builtInActions, ...customActions];
   const hasActions = allActions.length > 0;
 
+  const filteredData = useMemo(() => {
+    console.log('Filtrando datos con término:', searchTerm);
+    if (!searchTerm) return data;
+    
+    const lowercasedSearch = searchTerm.toLowerCase();
+    
+    return data.filter(row => {
+      return columns.some(col => {
+        const value = row[col.accessor];
+        return String(value).toLowerCase().includes(lowercasedSearch);
+      });
+    });
+  }, [data, searchTerm, columns]); 
+
   return (
     <Box sx={{ width: '100%', mb: 3 }}>
-      {/* Barra superior con buscador y controles */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <SearchBarPagination searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <span>Entries</span>
@@ -152,7 +160,6 @@ const DataTable = ({
         </Box>
       </Box>
 
-      {/* Menú de visibilidad de columnas */}
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -186,7 +193,6 @@ const DataTable = ({
         })}
       </Menu>
 
-      {/* Tabla de datos */}
       <TableContainer
         component={Paper}
         sx={{
@@ -231,7 +237,7 @@ const DataTable = ({
           </TableHead>
 
           <TableBody>
-            {data.length === 0 ? (
+            {filteredData.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (hasActions ? 1 : 0)}
@@ -242,7 +248,7 @@ const DataTable = ({
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((row, rowIndex) => (
+              filteredData.map((row, rowIndex) => (
                 <TableRow
                   key={rowIndex}
                   hover
@@ -322,7 +328,6 @@ const DataTable = ({
         </Table>
       </TableContainer>
 
-      {/* Diálogo de confirmación de eliminación */}
       <Dialog
         open={openConfirm}
         onClose={handleCloseConfirm}
@@ -344,7 +349,6 @@ const DataTable = ({
         </DialogActions>
       </Dialog>
 
-      {/* Controles de paginación */}
       <PaginationControls {...paginationConfig} />
     </Box>
   );

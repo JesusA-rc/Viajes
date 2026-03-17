@@ -17,7 +17,6 @@ public class CategoriasController : BaseApiController
         _paginationService = paginationService;
     }
 
-
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetCategorias()
@@ -62,13 +61,12 @@ public class CategoriasController : BaseApiController
     [HttpGet("pagination")]
     public async Task<IActionResult> GetCategoriasPagination(int page = 1, int limit = 10)
     {
-        var paginatedResponse = await _paginationService.GetPaginatedDataAsync(
-            cacheKey: "categorias_all",
-            page: page,
-            limit: limit,
-            dataFetchDelegate: () => _categoriasServices.GetAllAsList());
-        
-        return Ok(paginatedResponse); // Convierte a IActionResult con Ok()
+        if ((page < 1) || (limit < 1))
+        {
+            return BadRequest(new { error = "Los parámetros de paginación deben ser mayores que cero." });
+        }
+        var query = _categoriasServices.GetQueryable();
+        var result = await _paginationService.GetPaginatedAsync(query, page, limit);
+        return Ok(result);
     }
-
 }

@@ -3,7 +3,8 @@ import { useState } from 'react';
 import agent from '../api/agent'
 import { toast } from "react-toastify";
 
-export const useCategorias = () =>{
+export const useCategorias = () =>
+{
     const queryClient = useQueryClient();
 
     const {data: categorias, isPending} = useQuery({
@@ -20,11 +21,10 @@ export const useCategorias = () =>{
                 const response = await agent.put(`/categorias/${categoria.idCategoria}`, categoria);
                 return response.data;
             } catch (error) {
-                const errorMessage = error.response?.data?.error ||
-                                    (Array.isArray(error.response?.data?.error)
-                                    ? error.response.data.error.join('\n')
-                                    : '') ||
-                                    error.message;
+                const errorMessage = error.response?.data?.error 
+                    || (Array.isArray(error.response?.data?.error)
+                    ? error.response.data.error.join('\n') : '') 
+                    || error.message;
 
                 throw new Error(errorMessage);
             }
@@ -38,34 +38,41 @@ export const useCategorias = () =>{
         }
     });
 
-
     const createCategoria = useMutation({
-        mutationFn: async (nuevaCategoria) => {
-            try {
+        mutationFn: async (nuevaCategoria) => 
+        {
+            try 
+            {
                 const response = await agent.post('/categorias', nuevaCategoria);
                 return response.data;
-            } catch (error) {
-                if (error.response?.data?.error) {
-                    if (Array.isArray(error.response.data.error)) {
+            } 
+            catch (error) 
+            {
+                if (error.response?.data?.error) 
+                {
+                    if (Array.isArray(error.response.data.error)) 
+                    {
                         throw new Error(error.response.data.error.join('\n'));
                     }
                     throw new Error(error.response.data.error);
                 }
                 throw error;
             }
-
         },
-        onSuccess: async () => {
+        onSuccess: async () => 
+        {
             await queryClient.invalidateQueries({ queryKey: ['categorias'] });
             alert('Categoría creada exitosamente!');
         },
     });
 
     const deleteCategoria = useMutation({
-        mutationFn: async (idCategoria) => {
+        mutationFn: async (idCategoria) => 
+        {
             await agent.delete(`/categorias/${idCategoria}`);
         },
-        onSuccess: async () => {
+        onSuccess: async () => 
+        {
             await queryClient.invalidateQueries({ queryKey: ['categorias'] });
         },
     });
@@ -79,10 +86,8 @@ export const useCategorias = () =>{
     };
 }
 
-
-
-
-export const useCategoriasPagination = () => {
+export const useCategoriasPagination = () => 
+{
     const queryClient = useQueryClient();
     const [paginationState, setPaginationState] = useState({
         page: 1,
@@ -100,11 +105,13 @@ export const useCategoriasPagination = () => {
             params: paginationState
         }).then(res => res.data),
         keepPreviousData: true,
-        staleTime: 30 * 1000 // 30 segundos
+        staleTime: 30 * 1000
     });
 
-    const handlePageChange = (newPage) => {
-        if (!isPreviousData && paginatedData?.totalPages && newPage <= paginatedData.totalPages) {
+    const handlePageChange = (newPage) => 
+    {
+        if (!isPreviousData && paginatedData?.totalPages && newPage <= paginatedData.totalPages) 
+        {
             setPaginationState(prev => ({
                 ...prev,
                 page: newPage
@@ -112,15 +119,15 @@ export const useCategoriasPagination = () => {
         }
     };
 
-    const handleLimitChange = (newLimit) => {
+    const handleLimitChange = (newLimit) => 
+    {
         setPaginationState(prev => ({
             ...prev,
             limit: newLimit,
-            page: 1 // Resetear a la primera página al cambiar el límite
+            page: 1
         }));
     };
 
-    // Función para invalidar la caché de paginación
     const invalidatePagination = () => {
         queryClient.invalidateQueries(['categorias', 'pagination']);
     };
@@ -135,7 +142,7 @@ export const useCategoriasPagination = () => {
     });
 
     return {
-        categorias: paginatedData?.items || [], // Cambiado de .data a .items
+        categorias: paginatedData?.items || [],
         pagination: {
             page: paginatedData?.page || 1,
             limit: paginatedData?.limit || 10,

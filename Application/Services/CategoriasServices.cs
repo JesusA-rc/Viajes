@@ -7,6 +7,7 @@ using AutoMapper;
 using Application.Validators;
 using FluentValidation;
 using Application;
+using Azure.Core.Pipeline;
 
 namespace Application.Services;
 
@@ -104,4 +105,10 @@ public class CategoriasServices
 
         return Result<CategoriaDto>.Success(_mapper.Map<CategoriaDto>(categoriaToUpdate));
     }
+
+    public IQueryable<Categorias> GetQueryable()
+    {
+        return _context.Categorias.AsQueryable();
+    }
 }
+

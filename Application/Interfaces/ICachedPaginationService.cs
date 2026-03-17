@@ -1,3 +1,5 @@
+using Application.Profiles.DTOs;
+
 public interface ICachedPaginationService<T>
 {
     Task<PaginatedResponse<T>> GetPaginatedDataAsync(
@@ -5,4 +7,9 @@ public interface ICachedPaginationService<T>
         int page, 
         int limit, 
         Func<Task<List<T>>> dataFetchDelegate);
-}
+
+    Task<PaginatedResponse<T>> GetPaginatedAsync(
+        IQueryable<T> query,
+        int page,
+        int limit);
+}

@@ -5,15 +5,15 @@ const Footer = () => {
     return (
         <Box
             sx={{
-                backgroundColor: '#0d1117', 
+                backgroundColor: '#0d1117',
                 color: 'white',
-                padding: '20px 0', 
-                textAlign: 'center', 
+                padding: '20px 0',
+                textAlign: 'center',
             }}
         >
             <Typography variant="body1">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellat ipsum voluptas voluptatum iure dolor. Eveniet 
-                    est minus voluptatem dolore optio earum explicabo, a modi, aut, officia doloribus dolores. Molestiae, totam.
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellat ipsum voluptas voluptatum iure dolor. Eveniet
+                est minus voluptatem dolore optio earum explicabo, a modi, aut, officia doloribus dolores. Molestiae, totam.
             </Typography>
 
             <Box sx={{ my: 2 }}>
@@ -24,7 +24,7 @@ const Footer = () => {
 
             <Grid container spacing={2} justifyContent="center">
                 <Grid item xs={12} md={3}>
-                    <Box sx={{display:'flex', flexDirection: 'column', gap:2}}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <Typography variant="subtitle1">Product</Typography>
                         <Link href="#">Scrap Marketplace</Link>
                         <Link href="#">Services</Link>
@@ -32,7 +32,7 @@ const Footer = () => {
                     </Box>
                 </Grid>
                 <Grid item xs={12} md={3}>
-                    <Box sx={{display:'flex', flexDirection:'column',gap:2}}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <Typography variant="subtitle1">Company</Typography>
                         <Link href="#">About</Link>
                         <Link href="#">Blog</Link>
