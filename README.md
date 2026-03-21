@@ -4,7 +4,7 @@ Home
 Vista del cliente.
 <img width="1812" height="860" alt="image" src="https://github.com/user-attachments/assets/3b15e8d2-0010-429e-9a7b-3a6f7e711e91" />
 <img width="1815" height="867" alt="image" src="https://github.com/user-attachments/assets/a70cc5b5-b78e-405f-8018-c18bacda8dfe" />
-<img width="1813" height="866" alt="image" src="https://github.com/user-attachments/assets/ae1d0a67-875c-4f9b-bd42-709cf3091bbb" />
+<img width="1811" height="862" alt="image" src="https://github.com/user-attachments/assets/d71ab8fc-c772-4198-85f7-2768358df199" />
 <img width="1818" height="851" alt="image" src="https://github.com/user-attachments/assets/4dab5d99-9273-403e-9a75-b2aa644bc232" />
 <img width="1820" height="865" alt="image" src="https://github.com/user-attachments/assets/153fc3f5-1ee4-41a9-84f2-146f0515e3a8" />
 
