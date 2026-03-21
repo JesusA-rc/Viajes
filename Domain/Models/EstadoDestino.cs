@@ -15,11 +15,11 @@ public class EstadoDestino
     public int DestinoId { get; set; }
 
     [Required, MaxLength(50)]
-    public string Estado { get; set; } 
+    public string Estado { get; set; } = null!; 
 
     [ForeignKey("UsuarioId")]
-    public Usuario Usuario { get; set; }
+    public Usuario Usuario { get; set; } = null!;
 
     [ForeignKey("DestinoId")]
-    public Destinos Destino { get; set; }
+    public Destinos Destino { get; set; } = null!;
 }

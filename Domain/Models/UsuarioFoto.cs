@@ -9,5 +9,5 @@ public class UsuarioFoto
     public required int UsuarioId { get; set; }
     public required string? PublicId { get; set; }
     [JsonIgnore]
-    public Usuario Usuario { get; set; } 
+    public Usuario Usuario { get; set; } = null!;
 }

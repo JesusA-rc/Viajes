@@ -14,7 +14,7 @@ namespace Domain.Models
         [ForeignKey("Destino")]
         public int DestinoId { get; set; }
 
-        public virtual Usuario Usuario { get; set; }
-        public virtual Destinos Destino { get; set; }
+        public virtual Usuario Usuario { get; set; } = null!;
+        public virtual Destinos Destino { get; set; } = null!;
     }
 }

@@ -28,7 +28,7 @@ public static class ServiceExtensions
         services.AddScoped<EstadosDestinoService>();
         services.AddScoped<DestinoCategoriaService>();
         
-        services.AddAutoMapper(typeof(MappingProfile));
+        services.AddAutoMapper(cfg => {}, typeof(MappingProfile).Assembly);
         services.AddScoped<IUserFotoAccessor, UserFotoAccesor>();
         services.AddScoped<IPhotoService, PhotoService>();
 

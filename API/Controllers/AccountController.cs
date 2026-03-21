@@ -50,7 +50,7 @@ public class AccountController(SignInManager<Usuario> signInManager) : BaseApiCo
     [HttpGet("user-info")]
     public async Task<ActionResult> GetUserInfo()
     {
-        if (User.Identity.IsAuthenticated == false) return NoContent();
+        if (User.Identity?.IsAuthenticated == false) return NoContent();
 
         var user = await signInManager.UserManager.GetUserAsync(User);
 
@@ -79,6 +79,6 @@ public class AccountController(SignInManager<Usuario> signInManager) : BaseApiCo
 
 public class LoginRequest
 {
-    public string Email { get; set; }
-    public string Password { get; set; }
+    public string Email { get; set; } = null!;
+    public string Password { get; set; } = null!;
 }

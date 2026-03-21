@@ -4,7 +4,7 @@ namespace Domain.Models;
 
 public class Usuario : IdentityUser<int>
 {
-    public string Nombre { get; set; }
+    public string Nombre { get; set; } = null!;
     public DateTime FechaCreacion { get; set; }
     public bool Estado { get; set; }
 
