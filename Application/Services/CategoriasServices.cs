@@ -96,11 +96,13 @@ public class CategoriasServices
         if (!validationResult.IsValid)
         {
             var errors = string.Join(", ", validationResult.Errors);
+            
             return Result<CategoriaDto>.Failure($"Errores de validación: {errors}", 400);
         }
 
         categoriaToUpdate.Nombre = categoria.Nombre;
         categoriaToUpdate.Descripcion = categoria.Descripcion;
+        categoriaToUpdate.Imagen = categoria.Imagen;
         await _context.SaveChangesAsync();
 
         return Result<CategoriaDto>.Success(_mapper.Map<CategoriaDto>(categoriaToUpdate));
@@ -111,4 +113,4 @@ public class CategoriasServices
         return _context.Categorias.AsQueryable();
     }
 }
-
+

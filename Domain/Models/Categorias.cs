@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -11,8 +11,11 @@ public partial class Categorias
     public string Nombre { get; set; } = null!;
 
     public string? Descripcion { get; set; }
+
+    public string? Imagen { get; set; }
+
     [JsonIgnore]
     public virtual ICollection<Destinos> IdDestinos { get; set; } = new List<Destinos>();
-
+    
     public virtual ICollection<DestinoCategoria> DestinoCategoria { get; set; } = new List<DestinoCategoria>();
 }

@@ -1,9 +1,9 @@
-import React from 'react'
 import { Box, Typography } from '@mui/material'
 
-const CardCategoria = ({Nombre, Descripcion}) => {
-
-
+const CardCategoria = ({Nombre, Descripcion, Imagen}) => 
+{
+  const fallbackImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw0DJYZiAfRLB6G6wmN46an1CY_lBIP_9zKQ&s";
+  
   return (
     <Box sx={{display:'flex', flexDirection:'column', border: '1px solid gray', padding:2, borderRadius:5 }}>
       <Box
@@ -16,7 +16,7 @@ const CardCategoria = ({Nombre, Descripcion}) => {
         }}
       >
         <img
-          src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw0DJYZiAfRLB6G6wmN46an1CY_lBIP_9zKQ&s"
+          src= {Imagen || fallbackImage}
           alt={Nombre}
           style={{
             width: '100%',
@@ -25,6 +25,7 @@ const CardCategoria = ({Nombre, Descripcion}) => {
           }}
         />
       </Box>
+
       <Box sx={{display:'flex', flexDirection:'column'}}>
         <Typography variant='subtitle1' sx={{fontWeight:'bold'}}>{Nombre}</Typography>
         <Typography variant='subtitle2' >{Descripcion}</Typography>

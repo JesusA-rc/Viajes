@@ -1,6 +1,5 @@
 import { Box, Typography} from '@mui/material'
 import ButtonBackImage from '../components/ButtonBackImage'
-import React from 'react'
 
 const images = [
   {

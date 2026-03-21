@@ -1,4 +1,3 @@
-import React from 'react'
 import PopularDestinations from '../../components/PopularDestinos';
 import { Grid, Box, Typography, Button } from '@mui/material';
 import PopularCategorias from '../../components/PopularCategorias';
@@ -6,7 +5,8 @@ import FormasDePago from '../../components/FormasDePago';
 import Nosotros from '../../components/Nosotros';
 import Footer from '../../components/Footer';
 
-const ClienteLanding = () => {
+const ClienteLanding = () => 
+{
   const paddinggContent = 5;
   const urlImg = 'https://visitapuertovallarta.com.mx/uploads/1626/malecon-playa.jpg';
   const imagesRight = [
@@ -14,6 +14,7 @@ const ClienteLanding = () => {
     'https://i0.wp.com/foodandpleasure.com/wp-content/uploads/2024/09/gran-acuario-mazatlan0-1.jpg?fit=1200%2C900&ssl=1',
     'https://upload.wikimedia.org/wikipedia/commons/d/df/MTY_20080203_215709.JPG',
   ];
+
   return (
     <Box sx={{backgroundColor:'#f4f4f4', display:'flex', flexDirection:'column'}}>  
       <Box
@@ -39,7 +40,7 @@ const ClienteLanding = () => {
                     Viaja por diferentes partes del mundo y descubre nuevas experiencas
                   </Typography>
                   <Typography variant='subtitle1' sx={{color:'#225763', fontWeight: 'bold'}}>
-                  Desde Arenas Blancas hasta Cumbres Nevadas: Un Abanico de Posibilidades en Nuestras Imperdibles Categorías.
+                    Desde Arenas Blancas hasta Cumbres Nevadas: Un Abanico de Posibilidades en Nuestras Imperdibles Categorías.
                   </Typography>
                   <Box sx={{flexWrap:'wrap', mt:2}} >
                     <Button variant='contained' sx={{backgroundColor:'#fdb44b'}}>Descubre</Button>
@@ -80,9 +81,6 @@ const ClienteLanding = () => {
         <Nosotros/>
         <Footer/>
       </Box>
-
-
-
     </Box>
   )
 }

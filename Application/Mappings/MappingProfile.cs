@@ -30,15 +30,11 @@ public class MappingProfile : Profile
         CreateMap<Destinos, DestinoDto>()
             .ForMember(dest => dest.Categorias, opt => opt.MapFrom(src => src.DestinoCategoria));
     
-
         CreateMap<UsuarioDto, Usuario>()
             .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()) 
             .ForMember(dest => dest.SecurityStamp, opt => opt.Ignore()); 
 
         CreateMap<Usuario, UsuarioDto>()
             .ForMember(dest => dest.Password, opt => opt.Ignore()); //No pone el hash
-
-
-
     }
 }

@@ -1,31 +1,45 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Box, Button, TextField, Typography, Select, MenuItem, FormControl, InputLabel} from '@mui/material';
+import { 
+    Box,
+    Button,
+    TextField, 
+    Typography, 
+    Select, 
+    MenuItem, 
+    FormControl, 
+    InputLabel} from '@mui/material';
 import { useCategorias } from '../../../../../lib/hooks/useCategorias';
 
-const AdminEditarCategoria = () => {
+const AdminEditarCategoria = () => 
+{
     const { register, handleSubmit, setValue, reset } = useForm();
     const { categorias, isPending, updateCategoria } = useCategorias();
-
     const [selectedId, setSelectedId] = React.useState('');
 
-    const handleIdChange = (event) => {
+    const handleIdChange = (event) => 
+    {
         const id = event.target.value;
         setSelectedId(id);
 
         const selectedCategoria = categorias?.find((cat) => cat.idCategoria === parseInt(id, 10));
-        if (selectedCategoria) {
+        if (selectedCategoria) 
+        {
             setValue('nombre', selectedCategoria.nombre);
             setValue('descripcion', selectedCategoria.descripcion);
+            setValue('imagen', selectedCategoria.imagen || '');
         }
     };
 
-    const onSubmit = async (data) => {
-        try {
+    const onSubmit = async (data) => 
+    {
+        try 
+        {
             await updateCategoria.mutateAsync({
                 idCategoria: parseInt(selectedId, 10),
                 nombre: data.nombre,
                 descripcion: data.descripcion,
+                imagen: data.imagen,
             });
             reset();
         } catch (error) {
@@ -33,11 +47,13 @@ const AdminEditarCategoria = () => {
         }
     };
 
-    if (isPending) {
+    if (isPending) 
+    {
         return <Typography>Cargando...</Typography>;
     }
 
-    if (!categorias || categorias.length === 0) {
+    if (!categorias || categorias.length === 0) 
+    {
         return <Typography>No hay categorías disponibles</Typography>;
     }
 
@@ -76,6 +92,13 @@ const AdminEditarCategoria = () => {
                 multiline
                 rows={3}
                 required
+            />
+
+            <InputLabel>Imagen URL</InputLabel>
+            <TextField
+                {...register('imagen')}
+                fullWidth
+                placeholder="https://ejemplo.com/imagen.jpg"
             />
 
             <Button type='submit' variant='contained' color='primary' disabled={!selectedId}>

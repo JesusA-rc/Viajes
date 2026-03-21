@@ -5,12 +5,14 @@ import { useCategorias } from '../../../../../lib/hooks/useCategorias'
 import TextInput from '../../../components/TextInput';
 import { toast } from "react-toastify";
 
-const CrearCategoriaForm = () => {
+const CrearCategoriaForm = () => 
+{
   const { createCategoria } = useCategorias();
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       nombre: '',
-      descripcion: ''
+      descripcion: '',
+      imagen: ''
     }
   });
 
@@ -54,6 +56,13 @@ const CrearCategoriaForm = () => {
         fullWidth
         multiline
         rows={3}
+      />
+
+      <TextInput
+        name="imagen"
+        label="URL de la Imagen"
+        control={control}
+        fullWidth
       />
 
       <Box sx={{ display: 'flex', gap: 2 }}>

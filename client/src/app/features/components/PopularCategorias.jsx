@@ -1,19 +1,20 @@
-import React from 'react'
 import { Box, Typography, Button } from '@mui/material'
 import CardCategoria from './Cards/CardCategoria'
 import { useCategorias } from '../../../lib/hooks/useCategorias';
 
-const PopularCategorias = () => {
-
+const PopularCategorias = () => 
+{
     const { categorias, isPending } = useCategorias();
 
-    if(isPending){
+    if(isPending)
+    {
         return(
             <Typography>Cargando categorias...</Typography>
         )
     }
 
-    if (categorias.length === 0) {
+    if (categorias.length === 0) 
+    {
         return <Typography>No hay categorías disponibles.</Typography>;
     }
 
@@ -31,12 +32,10 @@ const PopularCategorias = () => {
         <Box sx={{display: 'flex', flexWrap:'wrap', gap:5, alignItems:'center', justifyContent:'center' }}>
             {
                 visibleCategorias.map((c)=>(
-                    <CardCategoria key={c.idCategoria} Nombre={c.nombre} Descripcion={c.descripcion}/>
+                    <CardCategoria key={c.idCategoria} Nombre={c.nombre} Descripcion={c.descripcion} Imagen={c.imagen}/>
                 ))
             }
         </Box>
-
-
     </Box>
   )
 }

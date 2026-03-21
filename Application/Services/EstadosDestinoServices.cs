@@ -147,7 +147,6 @@ namespace Application.Services
             return await query.ToListAsync();
         }
 
-
         public async Task<IEnumerable<EstadosDestinoDTO>> GetByDestinoIdAsync(int destinoId)
         {
             var estados = await _context.EstadoDestino

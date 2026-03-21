@@ -1,16 +1,15 @@
-import React, { Children, useState } from 'react'
+import  { useState } from 'react'
 import styles from '../../css/Nosotros.module.css'
 import { Box,Typography } from '@mui/material'
 
-
 const paddinBoxLeft =6;
 
-
-const Nosotros = () => {
-
+const Nosotros = () => 
+{
     const [select, setSelect] = useState(0);
 
-    const handleSelect = (row) =>{
+    const handleSelect = (row) =>
+    {
         setSelect(row);
     }
 
@@ -38,7 +37,8 @@ const Nosotros = () => {
   )
 }
 
-export const ShowColumn = ({ row, color }) => {
+export const ShowColumn = ({ row, color }) => 
+{
     return (
       {
         0: <ColumnRight 
@@ -60,7 +60,8 @@ export const ShowColumn = ({ row, color }) => {
     );
 };
 
-export const ColumnRight = ({encabezado, textPrincipal, subText, _backColor, children}) => {
+export const ColumnRight = ({encabezado, textPrincipal, subText, _backColor, children}) => 
+{
     return(
         <Box sx={{display: 'flex', flexDirection: 'column', gap: 4, backgroundColor: _backColor, height: '100%', width: '100%', padding: 4}}>
             <Typography variant='subtitle2' sx={{color: 'white', fontWeight: 'bold'}}>{encabezado}</Typography>
