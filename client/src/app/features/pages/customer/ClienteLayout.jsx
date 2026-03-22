@@ -2,7 +2,8 @@ import { Box } from '@mui/material';
 import UserBanner from '../../components/UserBanner';
 import { Outlet } from 'react-router';
 
-const ClienteLayout = () => {
+const ClienteLayout = () => 
+{
   return (
     <Box sx={{ 
       display: 'flex', 

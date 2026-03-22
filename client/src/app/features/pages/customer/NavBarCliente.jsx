@@ -3,26 +3,22 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { AppBar, Toolbar, Typography, Button, Avatar, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useProfile } from '../../../../lib/hooks/useProfile';
 
 const logoImg = "https://images.vexels.com/media/users/3/128926/isolated/preview/c60c97eba10a56280114b19063d04655-icono-redondo-del-aeropuerto-de-avion.png";
 
-const NavBarCliente = () => {
+const NavBarCliente = () => 
+{
     const [isHovered, setIsHovered] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
-    const { logoutUser, currentUser, loadingUserInfo } = useProfile();
-    if (loadingUserInfo) {
-        return <Typography>Cargando...</Typography>
-    }
+    const { logoutUser, currentUser } = useProfile();
 
     const solidColor = '#0056E1';
     const transparentColor = 'rgba(0, 86, 225, 0.5)';
-
     const activeColorNav = '#e46161';
-
 
     const isActiveColorNav = (path) => {
         return location.pathname === path;
@@ -34,7 +30,6 @@ const NavBarCliente = () => {
         { text: 'Estadisticas', path: '/clientes/estadisticas' },
         { text: 'Buscar', path: '/clientes/buscar/destinos' },
     ];
-
 
     const open = Boolean(anchorEl);
 
@@ -68,7 +63,7 @@ const NavBarCliente = () => {
             <Toolbar>
 
                 <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-                    <Typography variant="h6" component="div">
+                    <Typography variant="h6" component="div" sx={{ cursor: 'pointer' }} onClick={() => navigate('/company')}>
                         <img src={logoImg} alt="Logo" style={{ width: '30px', height: '30px' }} />
                     </Typography>
                 </Box>
@@ -78,7 +73,8 @@ const NavBarCliente = () => {
                         <Button
                             key={index}
                             color="inherit"
-                            href={link.path}
+                            component={Link}
+                            to={link.path}
                             sx={{
                                 color: isActiveColorNav(link.path) ? activeColorNav : 'inherit',
                                 fontWeight: 'bold'
@@ -93,7 +89,7 @@ const NavBarCliente = () => {
                     <SearchIcon />
                     <Avatar
                         alt="User Profile"
-                        src="/avatar.jpg"
+                        src={currentUser?.fotoPerfil || "/avatar.jpg"}
                         sx={{ ml: 2, cursor: 'pointer' }}
                         onClick={handleClick}
                     />
@@ -132,3 +128,4 @@ const NavBarCliente = () => {
 };
 
 export default NavBarCliente;
+;
