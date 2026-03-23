@@ -1,75 +1,71 @@
-import React from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Button, Paper, Avatar} from '@mui/material';
-import { useDestinos } from '../../../../../lib/hooks/useDestinos';
+import { Box, Typography, Avatar } from '@mui/material';
+import { useDestinosPagination } from '../../../../../lib/hooks/useDestinos';
+import DataTable from '../../../components/DataTable';
 
-const AdminDestinos = () => {
-    const { destinos, isPending, deleteDestino } = useDestinos();
+const AdminDestinos = () => 
+{
+    const { 
+        destinos, 
+        pagination, 
+        isLoading, 
+        handlePageChange, 
+        handleLimitChange, 
+        deleteDestino } = useDestinosPagination();
 
-    const handleDelete = async (idDestinos) => {
-        try {
-            await deleteDestino.mutateAsync(idDestinos);
-            alert('Destino eliminad correctamente');
-        } catch (error) {
+    const handleDelete = async (item) => 
+    {
+        try 
+        {
+            await deleteDestino.mutateAsync(item.idDestino);
+            alert('Destino eliminado correctamente');
+        } 
+        catch (error) 
+        {
             console.error('Error al eliminar el destino:', error);
             alert('Ocurrió un error al eliminar el destino');
         }
     };
 
-    if (isPending) {
-        return <Typography>Cargando destinos...</Typography>;
-    }
+    const columns = [
+        { header: 'ID', accessor: 'idDestino' },
+        { header: 'Nombre', accessor: 'nombre' },
+        { header: 'Descripción', accessor: 'descripcion' },
+        { header: 'País', accessor: 'pais' },
+        { header: 'Región', accessor: 'region' },
+        { 
+            header: 'Imagen', 
+            accessor: 'imagen',
+            render: (value, row) => (
+                <Avatar
+                    src={value}
+                    alt={`Imagen de ${row.nombre}`}
+                    sx={{ width: 50, height: 50 }}
+                />
+            )
+        }
+    ];
 
-    if (!destinos || destinos.length === 0) {
-        return <Typography>No hay destinos disponibles</Typography>;
+    if (isLoading && !destinos.length) {
+        return <Typography>Cargando destinos...</Typography>;
     }
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 4 }}>
-            <Typography variant="h5">Lista de destinos</Typography>
+            <Typography variant="h5">Lista de Destinos</Typography>
 
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Nombre</TableCell>
-                            <TableCell>Descripción</TableCell>
-                            <TableCell>Pais</TableCell>
-                            <TableCell>Regiones</TableCell>
-                            <TableCell>img</TableCell>
-                            <TableCell>Acciones</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {destinos.map((destinos, index) => (
-                            <TableRow key={destinos.idDestino} 
-                            sx={{backgroundColor: index % 2 === 0 ? '#c4c1e0' : '#ffe9e3'}}>
-                                <TableCell>{destinos.idDestino}</TableCell>
-                                <TableCell>{destinos.nombre}</TableCell>
-                                <TableCell>{destinos.descripcion}</TableCell>
-                                <TableCell>{destinos.pais}</TableCell>
-                                <TableCell>{destinos.region}</TableCell>
-                                <TableCell>
-                                <Avatar
-                                    src={destinos.imagen}
-                                    alt={`Imagen de ${destinos.nombre}`}
-                                    sx={{ width: 50, height: 50, cursor:'pointer'}}
-                                />
-                                </TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        onClick={() => handleDelete(destinos.idDestino)}
-                                    >
-                                        Eliminar
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <DataTable 
+                columns={columns} 
+                data={destinos || []} 
+                onDelete={handleDelete}
+                pagination={{
+                    page: pagination.page,
+                    limit: pagination.limit,
+                    totalItems: pagination.totalItems,
+                    onPageChange: handlePageChange,
+                    onLimitChange: handleLimitChange,
+                    isFetching: isLoading
+                }}
+            />
         </Box>
     );
 };

@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
 import { useCategoriasPagination } from '../../../../../lib/hooks/useCategorias';
-import { Paper, Typography, TextField } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
 import DataTable from '../../../components/DataTable';
 
 const VerCategoriasForm = () => 
 {
-  const [filtroId, setFiltroId] = useState('');
-
   const {
     categorias,
     pagination,
@@ -15,9 +12,10 @@ const VerCategoriasForm = () =>
     handlePageChange,
     handleLimitChange,
     deleteCategoria
-  } = useCategoriasPagination(filtroId);
+  } = useCategoriasPagination();
 
-  const handleDelete = (item) => {
+  const handleDelete = (item) => 
+  {
     deleteCategoria.mutate(item.idCategoria, {
       onSuccess: () => {
         toast.success("Categoría borrada correctamente.");
@@ -44,15 +42,6 @@ const VerCategoriasForm = () =>
 
   return (
     <Paper sx={{ p: 2 }}>
-      <TextField
-        label="Filtrar por ID"
-        variant="outlined"
-        size="small"
-        value={filtroId}
-        sx={{ mb: 2 }}
-        onChange={(e) => setFiltroId(e.target.value)}
-        disabled={isLoading}
-      />
       <DataTable
         columns={columns}
         data={categorias}

@@ -138,6 +138,7 @@ export const useCategoriasPagination = () =>
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['categorias'] });
+            await queryClient.invalidateQueries({ queryKey: ['categorias', 'pagination'] });
         },
     });
 

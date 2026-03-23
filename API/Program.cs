@@ -18,23 +18,18 @@ using MediatR;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers(opt =>
 {
     //Politica de autenticacion
-    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().
-    Build();
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
     //La aplica globalmente
     opt.Filters.Add(new AuthorizeFilter(policy));
-
 });
 
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
-
 builder.Services.AddValidatorsFromAssemblyContaining<CategoriaValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<DestinoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
@@ -56,7 +51,6 @@ builder.Services.AddIdentityApiEndpoints<Usuario>(opt =>
 
 builder.Services.Configure<CloudinarySettings>(builder.Configuration
     .GetSection("CloudinarySettings"));
-
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -90,12 +84,10 @@ app.UseCors(x => x
     .AllowCredentials()
     .SetIsOriginAllowed(_ => true));
 
-
 app.UseAuthentication(); 
 app.UseAuthorization();  
 
 app.UseHttpsRedirection();
-
 
 app.MapControllers();
 app.MapGroup("api").MapIdentityApi<Usuario>();

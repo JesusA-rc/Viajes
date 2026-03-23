@@ -271,9 +271,13 @@ const DataTable = ({
                         align={align}
                         sx={{ textAlign: align }}
                       >
-                        <Typography noWrap>
-                          {String(value)}
-                        </Typography>
+                        {col.render ? (
+                          col.render(value, row)
+                        ) : (
+                          <Typography noWrap>
+                            {String(value)}
+                          </Typography>
+                        )}
                       </TableCell>
                     );
                   })}

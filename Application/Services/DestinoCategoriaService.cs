@@ -92,4 +92,20 @@ public class DestinoCategoriaService
         await _context.SaveChangesAsync();
         return Result<bool>.Success(true);
     }
+
+    public IQueryable<DestinoCategoriaViewDTO> GetQueryable()
+    {
+        return _context.DestinoCategorias
+            .Include(dc => dc.Destino)
+            .Include(dc => dc.Categoria)
+            .Select(dc => new DestinoCategoriaViewDTO
+            {
+                ID_Destino = dc.ID_Destino,
+                ID_Categoria = dc.ID_Categoria,
+                NombreCategoria = dc.Categoria.Nombre,
+                NombreDestino = dc.Destino.Nombre,
+                ImagenDestino = dc.Destino.Imagen
+            })
+            .AsQueryable();
+    }
 }

@@ -9,16 +9,21 @@ namespace API.Controllers;
 public class DestinoCategoriaController : BaseApiController
 {
     private readonly DestinoCategoriaService _destinoCategoriaService;
+    private readonly ICachedPaginationService<DestinoCategoriaViewDTO> _paginationService;
 
-    public DestinoCategoriaController(DestinoCategoriaService destinoCategoriaService)
+    public DestinoCategoriaController(
+        DestinoCategoriaService destinoCategoriaService,
+         ICachedPaginationService<DestinoCategoriaViewDTO> paginationService)
     {
         _destinoCategoriaService = destinoCategoriaService;
+        _paginationService = paginationService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllRelaciones()
     {
         var result = await _destinoCategoriaService.GetAll();
+        
         return HandleResult(result);
     }
 
@@ -26,6 +31,7 @@ public class DestinoCategoriaController : BaseApiController
     public async Task<IActionResult> GetAllCategoriasByDestino(int idDestino)
     {
         var result = await _destinoCategoriaService.GetAllByDestino(idDestino);
+
         return HandleResult(result);
     }
 
@@ -33,6 +39,7 @@ public class DestinoCategoriaController : BaseApiController
     public async Task<IActionResult> CreateRelacion([FromBody] DestinoCategoriaDTO dto)
     {
         var result = await _destinoCategoriaService.Create(dto);
+
         return HandleResult(result);
     }
 
@@ -40,6 +47,20 @@ public class DestinoCategoriaController : BaseApiController
     public async Task<IActionResult> DeleteRelacion(int idDestino, int idCategoria)
     {
         var result = await _destinoCategoriaService.Delete(idDestino, idCategoria);
+
         return HandleNoContent(result);
+    }
+
+    [HttpGet("pagination")]
+    public async Task<IActionResult> GetRelacionesPagination(int page = 1, int limit = 10)
+    {
+        if (page < 1 || limit < 1)
+        {
+            return BadRequest(new { error = "Los parámetros de paginación deben ser mayores que cero." });
+        }
+        var query = _destinoCategoriaService.GetQueryable();
+        var result = await _paginationService.GetPaginatedAsync(query, page, limit);
+
+        return Ok(result);
     }
 }

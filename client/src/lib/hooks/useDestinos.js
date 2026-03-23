@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient }  from '@tanstack/react-query'
+import { useState } from 'react';
 import { toast } from "react-toastify";
 
 import agent from '../api/agent'
@@ -49,17 +50,22 @@ export const useDestinos = () => {
 
     const updateDestino = useMutation({
         mutationFn: async (actualizarDestino) => {
-            try {
+            try 
+            {
                 const response = await agent.put(`/destinos/${actualizarDestino.idDestino}`, actualizarDestino);
                 return response.data;
-            } catch (error) {
-                const errorMessage = error.response?.data?.error || 
-                                    (Array.isArray(error.response?.data) ? error.response.data.join('\n') : '') || 
-                                    error.message;
+            } 
+            catch (error) 
+            {
+                const errorMessage = error.response?.data?.error 
+                    ||  (Array.isArray(error.response?.data) ? error.response.data.join('\n') : '') 
+                    || error.message;
 
-                if (Array.isArray(errorMessage)) {
+                if (Array.isArray(errorMessage)) 
+                {
                     throw new Error(errorMessage.join('\n'));
                 }
+
                 throw new Error(errorMessage);
             }
         },
@@ -93,7 +99,6 @@ export const useDestinos = () => {
     };
 }
 
-
 export function useDestinoByID(id) {
   return useQuery({
     queryKey: ['destino', id],
@@ -109,3 +114,71 @@ export function useDestinoByID(id) {
     }
   });
 }
+
+export const useDestinosPagination = () => 
+{
+    const queryClient = useQueryClient();
+    const [paginationState, setPaginationState] = useState({
+        page: 1,
+        limit: 10
+    });
+
+    const { 
+        data: paginatedData, 
+        isLoading, 
+        isFetching, 
+        isPreviousData 
+    } = useQuery({
+        queryKey: ['destinos', 'pagination', paginationState],
+        queryFn: () => agent.get('/destinos/pagination', {
+            params: paginationState
+        }).then(res => res.data),
+        keepPreviousData: true,
+        staleTime: 30 * 1000
+    });
+
+    const handlePageChange = (newPage) => {
+        if (!isPreviousData && paginatedData?.totalPages && newPage <= paginatedData.totalPages) 
+        {
+            setPaginationState(prev => ({
+                ...prev,
+                page: newPage
+            }));
+        }
+    };
+
+    const handleLimitChange = (newLimit) => 
+    {
+        setPaginationState(prev => ({
+            ...prev,
+            limit: newLimit,
+            page: 1
+        }));
+    };
+
+    const deleteDestino = useMutation({
+        mutationFn: async (idDestino) => {
+            await agent.delete(`/destinos/${idDestino}`);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['destinos'] });
+            await queryClient.invalidateQueries({ queryKey: ['destinos', 'pagination'] });
+        },
+    });
+
+    return {
+        destinos: paginatedData?.items || [],
+        pagination: {
+            page: paginatedData?.page || 1,
+            limit: paginatedData?.limit || 10,
+            totalItems: paginatedData?.totalItems || 0,
+            totalPages: paginatedData?.totalPages || 1
+        },
+        isLoading,
+        isFetching,
+        isPreviousData,
+        handlePageChange,
+        handleLimitChange,
+        deleteDestino
+    };
+};

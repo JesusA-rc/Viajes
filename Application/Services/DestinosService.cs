@@ -58,7 +58,6 @@ public class DestinosServices
 
     public async Task<Result<IEnumerable<DestinoDto>>> GetAllWithCategories()
     {
-
         var destinos = await _context.Destinos
             .Include(d => d.DestinoCategoria)
                 .ThenInclude(dc => dc.Categoria)
@@ -100,9 +99,9 @@ public class DestinosServices
         }
 
         var destinoDto = _mapper.Map<DestinoDto>(destino);
+        
         return Result<DestinoDto>.Success(destinoDto);
     }
-
 
     public async Task<Result<bool>> DeleteDestino(int id)
     {
@@ -157,5 +156,10 @@ public class DestinosServices
         await _context.SaveChangesAsync();
 
         return Result<DestinoDto>.Success(_mapper.Map<DestinoDto>(destinoToUpdate));
+    }
+
+    public IQueryable<Destinos> GetQueryable()
+    {
+        return _context.Destinos.AsQueryable();
     }
 }

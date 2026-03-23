@@ -1,10 +1,10 @@
-import React, { createContext, useState } from 'react';
+import { createContext, useState } from 'react';
 import { useCategorias} from '../../../lib/hooks/useCategorias'
 
 export const FiltrosContext = createContext();
 
-export const FiltrosProvider = ({ children }) => {
-
+export const FiltrosProvider = ({ children }) => 
+{
   const {categorias, isPending} = useCategorias();
 
   const opcionesCategorias = isPending 

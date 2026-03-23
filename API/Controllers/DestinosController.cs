@@ -10,10 +10,12 @@ namespace API.Controllers;
 public class DestinosController : BaseApiController
 {
     private readonly DestinosServices _destinosServices;
+    private readonly ICachedPaginationService<Destinos> _paginationService;
 
-    public DestinosController(DestinosServices destinosServices)
+    public DestinosController(DestinosServices destinosServices, ICachedPaginationService<Destinos> paginationService)
     {
         _destinosServices = destinosServices;
+        _paginationService = paginationService;
     }
 
     [AllowAnonymous]
@@ -71,5 +73,18 @@ public class DestinosController : BaseApiController
     {
         var result = await _destinosServices.DeleteDestino(id);
         return HandleNoContent(result);
+    }
+
+    [HttpGet("pagination")]
+    public async Task<IActionResult> GetDestinosPagination(int page = 1, int limit = 10)
+    {
+        if (page < 1 || limit < 1)
+        {
+            return BadRequest(new { error = "Los parámetros de paginación deben ser mayores que cero." });
+        }
+        var query = _destinosServices.GetQueryable();
+        var result = await _paginationService.GetPaginatedAsync(query, page, limit);
+        
+        return Ok(result);
     }
 }
