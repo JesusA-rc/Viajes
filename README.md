@@ -40,8 +40,7 @@ Pagina del destino
 
 Pagina del admin.
 Pagina para ver destinos.
-<img width="1830" height="858" alt="image" src="https://github.com/user-attachments/assets/5840e486-65a7-4e8d-88b0-049ac9c7c2ff" />
-<img width="1840" height="857" alt="image" src="https://github.com/user-attachments/assets/c23d9408-4abc-4d7a-bb86-db2011aa9ed2" />
+<img width="1822" height="847" alt="image" src="https://github.com/user-attachments/assets/c5e69749-faef-4a63-b4fc-c21196666d5c" />
 
 Ver destino-categoria
 <img width="1817" height="863" alt="image" src="https://github.com/user-attachments/assets/dd83f928-efc7-4794-8a9f-d68e77cfa5c1" />
