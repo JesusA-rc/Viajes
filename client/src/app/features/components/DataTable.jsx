@@ -30,6 +30,19 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import PaginationControls from './PaginationControls';
 import SearchBarPagination from './SearchBarPagination';
 
+const getAlignment = (column, value = null) => 
+{
+  if (column.align) return column.align;
+
+  const isNumeric = typeof value === 'number' && !isNaN(value);
+  const isId = column.accessor.toLowerCase().includes('id') || column.accessor === 'id';
+  
+  if (isId) return 'left';
+  if (isNumeric) return 'right';
+
+  return 'left';
+};
+
 const DataTable = ({ 
   columns, 
   data = [], 
@@ -131,7 +144,12 @@ const DataTable = ({
 
   return (
     <Box sx={{ width: '100%', mb: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        mb: 2 
+      }}>
         <SearchBarPagination searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -207,13 +225,18 @@ const DataTable = ({
               {columns.map((col, index) => {
                 const key = col.accessor;
                 if (!columnVisibility[key]) return null;
+                
+                const cellAlign = getAlignment(col);
+
                 return (
                   <TableCell
                     key={index}
+                    align={cellAlign}
                     sx={{
                       color: 'white',
                       fontWeight: 'bold',
                       borderColor: '#bbdefb',
+                      textAlign: cellAlign
                     }}
                   >
                     {col.header}
@@ -244,7 +267,10 @@ const DataTable = ({
                   align="center"
                   sx={{ py: 3, color: 'text.secondary' }}
                 >
-                  {searchTerm ? 'No se encontraron resultados para la búsqueda' : 'No hay registros disponibles'}
+                  {searchTerm 
+                    ? 'No se encontraron resultados para la búsqueda' 
+                    : 'No hay registros disponibles'
+                  }
                 </TableCell>
               </TableRow>
             ) : (
@@ -260,22 +286,21 @@ const DataTable = ({
                   {columns.map((col, colIndex) => {
                     const key = col.accessor;
                     if (!columnVisibility[key]) return null;
-                    const value = row[key];
-                    const isNumeric = typeof value === 'number' && !isNaN(value);
                     
-                    const align = key === 'id' ? 'left' : (isNumeric ? 'right' : 'left');
+                    const value = row[key];
+                    const cellAlign = getAlignment(col, value);
 
                     return (
                       <TableCell
                         key={`${rowIndex}-${colIndex}`}
-                        align={align}
-                        sx={{ textAlign: align }}
+                        align={cellAlign}
+                        sx={{ textAlign: cellAlign }}
                       >
                         {col.render ? (
                           col.render(value, row)
                         ) : (
                           <Typography noWrap>
-                            {String(value)}
+                            {String(value ?? '')}
                           </Typography>
                         )}
                       </TableCell>
