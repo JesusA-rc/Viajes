@@ -9,13 +9,13 @@ namespace API.Controllers
     [ApiController]
     public class BaseApiController : ControllerBase
     {
-        
         private IMediator? _mediator;
 
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>()
             ?? throw new Exception("Imediator service is unavailable");
 
-         protected ActionResult HandleResultMe<T>(Result<T> result){
+         protected ActionResult HandleResultMe<T>(Result<T> result)
+         {
             if(!result.IsSuccess && result.Code == 404) return NotFound(result.Error);
 
             if(result.IsSuccess && result.Value != null) return Ok(result.Value);

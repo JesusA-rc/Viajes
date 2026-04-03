@@ -29,13 +29,21 @@ public class ExceptionMiddleware(ILogger<ExceptionMiddleware> logger, IHostEnvir
     {
         logger.LogError(ex, ex.Message);
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+        var statusCode = ex switch
+        {
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+        context.Response.StatusCode = statusCode;
 
         var response = env.IsDevelopment()
-            ? new AppException(context.Response.StatusCode, ex.Message, ex.StackTrace)
-            : new AppException(context.Response.StatusCode, ex.Message, null);
+            ? new AppException(statusCode, ex.Message, ex.StackTrace?.ToString())
+            : new AppException(statusCode, "Internal Server Error", null);
 
-        var options = new JsonSerializerOptions{PropertyNamingPolicy = JsonNamingPolicy.CamelCase};
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         var json = JsonSerializer.Serialize(response, options);
         await context.Response.WriteAsync(json);
     }

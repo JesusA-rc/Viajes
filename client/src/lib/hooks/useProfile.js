@@ -104,7 +104,8 @@ export const useProfile = (id) => {
         queryClient.setQueryData(['photos', id], context.previousPhotos);
         
 
-        toast.error(`Error al eliminar foto: ${error.message}`, {
+        const message = Array.isArray(error) ? error.join('\n') : error.message;
+        toast.error(`Error al eliminar foto: ${message}`, {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,

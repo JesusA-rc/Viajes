@@ -16,54 +16,28 @@ export const useCategorias = () =>
     });
 
     const updateCategoria = useMutation({
-        mutationFn: async (categoria) => {
-            try {
-                const response = await agent.put(`/categorias/${categoria.idCategoria}`, categoria);
-                return response.data;
-            } catch (error) {
-                const errorMessage = error.response?.data?.error 
-                    || (Array.isArray(error.response?.data?.error)
-                    ? error.response.data.error.join('\n') : '') 
-                    || error.message;
-
-                throw new Error(errorMessage);
-            }
-        },
+        mutationFn: (categoria) => agent.put(`/categorias/${categoria.idCategoria}`, categoria).then(res => res.data),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['categorias'] });
             toast.success("Categoría actualizada correctamente");
         },
         onError: (error) => {
-            toast.error("Error al actualizar: " + error.message);
+            const message = Array.isArray(error) ? error.join('\n') : error.message;
+            toast.error("Error al actualizar: " + message);
         }
     });
 
     const createCategoria = useMutation({
-        mutationFn: async (nuevaCategoria) => 
-        {
-            try 
-            {
-                const response = await agent.post('/categorias', nuevaCategoria);
-                return response.data;
-            } 
-            catch (error) 
-            {
-                if (error.response?.data?.error) 
-                {
-                    if (Array.isArray(error.response.data.error)) 
-                    {
-                        throw new Error(error.response.data.error.join('\n'));
-                    }
-                    throw new Error(error.response.data.error);
-                }
-                throw error;
-            }
-        },
+        mutationFn: (nuevaCategoria) => agent.post('/categorias', nuevaCategoria).then(res => res.data),
         onSuccess: async () => 
         {
             await queryClient.invalidateQueries({ queryKey: ['categorias'] });
-            alert('Categoría creada exitosamente!');
+            toast.success('Categoría creada exitosamente!');
         },
+        onError: (error) => {
+            const message = Array.isArray(error) ? error.join('\n') : error.message;
+            toast.error(message);
+        }
     });
 
     const deleteCategoria = useMutation({

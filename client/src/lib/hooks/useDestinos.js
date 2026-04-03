@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 
 import agent from '../api/agent'
 
-export const useDestinos = () => {
+export const useDestinos = () => 
+{
     const queryClient = useQueryClient();
 
     const {data: destinos, isPending} = useQuery({
@@ -24,57 +25,27 @@ export const useDestinos = () => {
     });
 
     const createDestino = useMutation({
-        mutationFn: async (nuevoDestino) => {
-            try {
-                const response = await agent.post('/destinos', nuevoDestino);
-                return response.data;
-            } catch (error) {
-                const errorMessage = error.response?.data?.error || 
-                                error.response?.data?.error.join('\n') || 
-                                error.message;
-                
-                if (Array.isArray(errorMessage)) {
-                    throw new Error(errorMessage.join('\n'));
-                }
-                throw new Error(errorMessage);
-            }
-        },
+        mutationFn: (nuevoDestino) => agent.post('/destinos', nuevoDestino).then(res => res.data),
         onSuccess: async () => {
             toast.success("Destino agregado correctamente");
             await queryClient.invalidateQueries({ queryKey: ['destinos'] });
         },
         onError: (error) => {
-            toast.error(error.message);
+            const message = Array.isArray(error) ? error.join('\n') : error.message;
+            toast.error(message);
         }
     });
 
     const updateDestino = useMutation({
-        mutationFn: async (actualizarDestino) => {
-            try 
-            {
-                const response = await agent.put(`/destinos/${actualizarDestino.idDestino}`, actualizarDestino);
-                return response.data;
-            } 
-            catch (error) 
-            {
-                const errorMessage = error.response?.data?.error 
-                    ||  (Array.isArray(error.response?.data) ? error.response.data.join('\n') : '') 
-                    || error.message;
-
-                if (Array.isArray(errorMessage)) 
-                {
-                    throw new Error(errorMessage.join('\n'));
-                }
-
-                throw new Error(errorMessage);
-            }
-        },
+        mutationFn: (actualizarDestino) => 
+            agent.put(`/destinos/${actualizarDestino.idDestino}`, actualizarDestino).then(res => res.data),
         onSuccess: async () => {
             toast.success("Destino actualizado correctamente");
             await queryClient.invalidateQueries({ queryKey: ['destinos'] });
         },
         onError: (error) => {
-            toast.error(error.message);
+            const message = Array.isArray(error) ? error.join('\n') : error.message;
+            toast.error(message);
         }
     });
 

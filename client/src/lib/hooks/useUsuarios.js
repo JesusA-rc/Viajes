@@ -36,9 +36,8 @@ export const useUsuarios = () => {
             navigate('/clientes/login');
         },
         onError: (error) => {
-            const errors = error.response?.data;
-            toast.error('Hubo un error al registrarte');
-            return errors.data;
+            const message = Array.isArray(error) ? error.join('\n') : error.message;
+            toast.error(message || 'Hubo un error al registrarte');
         }
     });
 

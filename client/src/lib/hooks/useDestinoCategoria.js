@@ -16,23 +16,14 @@ export const useDestinoCategoria = () =>
     });
 
     const createRelacion = useMutation({
-        mutationFn: async (nuevaRelacion) => {
-            try {
-                const response = await agent.post('/destinocategoria', nuevaRelacion);
-                return response.data;
-            } catch (error) {
-                if (error.response?.data?.error) {
-                    if (Array.isArray(error.response.data.error)) {
-                        throw new Error(error.response.data.error.join('\n'));
-                    }
-                    throw new Error(error.response.data.error);
-                }
-                throw error;
-            }
-        },
+        mutationFn: (nuevaRelacion) => agent.post('/destinocategoria', nuevaRelacion).then(res => res.data),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['relacionesDestinoCategoria'] });
             toast.success('Relación creada exitosamente!');
+        },
+        onError: (error) => {
+            const message = Array.isArray(error) ? error.join('\n') : error.message;
+            toast.error(message);
         }
     });
 

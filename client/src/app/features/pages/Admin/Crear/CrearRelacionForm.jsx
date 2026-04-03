@@ -1,10 +1,9 @@
-import React from 'react';
 import { Box, Button } from '@mui/material';
 import TextInput from '../../../components/TextInput'
 import { useForm } from 'react-hook-form';
 
-
-const CrearRelacionForm = ({ onSubmit, isPending }) => {
+const CrearRelacionForm = ({ onSubmit, isPending }) => 
+{
   const { control, handleSubmit } = useForm({
     defaultValues: {
       iD_Destino: '',

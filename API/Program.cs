@@ -69,13 +69,12 @@ var app = builder.Build();
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
-
-app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(x => x
     .WithOrigins("http://localhost:5173", "https://localhost:5173")
